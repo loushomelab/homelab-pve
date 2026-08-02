@@ -1,13 +1,12 @@
 locals {
   talos_version = "v1.13.7"
-  # 修正了下载链接：Talos 官方的 iso 名字叫 metal-amd64.iso
   talos_iso_url = "https://github.com/siderolabs/talos/releases/download/${local.talos_version}/metal-amd64.iso"
 }
 
-# 1. 下载 Talos ISO
+# 1. 下载 Talos ISO 到 r720 的 local 存储
 resource "proxmox_virtual_environment_download_file" "talos_iso" {
   content_type = "iso"
-  datastore_id = "local" # ISO 镜像必须放在目录类型的存储 (如 local)，不能放在 Ceph (rbd)
+  datastore_id = "local"
   node_name    = "r720"
 
   url       = local.talos_iso_url
@@ -18,21 +17,23 @@ resource "proxmox_virtual_environment_download_file" "talos_iso" {
 resource "proxmox_virtual_environment_vm" "talos_cp_01" {
   name      = "talos-cp-01"
   node_name = "r720"
-  vm_id     = 801 # 给 CP 节点预留一个号段，比如 80x
+  vm_id     = 801 
 
-  # 关键：忽略因为 HA 漂移导致的 node 变更，以及 DHCP/光驱 等状态变更
   lifecycle {
     ignore_changes = [
       node_name,
       ipv4_addresses,
       mac_addresses,
-      cdrom, # 忽略光驱变化，允许您在系统装好后手动弹出光驱
+      cdrom,
     ]
   }
 
   agent {
     enabled = true
   }
+
+  # 关键修复 1：明确指定启动顺序，先尝试从 CDROM (ide2) 启动，再从硬盘 (scsi0) 启动
+  boot_order = ["ide2", "scsi0"]
 
   cpu {
     cores = 4
@@ -43,16 +44,14 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
     dedicated = 4096
   }
 
-  # 系统盘配置为 Ceph-pool
   disk {
     datastore_id = "Ceph-pool"
     interface    = "scsi0"
     size         = 40
     file_format  = "raw"
-    discard      = "on" # 开启 TRIM 支持
+    discard      = "on"
   }
 
-  # 挂载 Talos 安装镜像
   cdrom {
     enabled   = true
     file_id   = proxmox_virtual_environment_download_file.talos_iso.id
@@ -64,17 +63,18 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
   }
 
   operating_system {
-    type = "l26" # Linux kernel
+    type = "l26" 
   }
 
-  # UEFI 引导 (Talos 推荐) 需要一个 EFI 磁盘，配置为 Ceph-pool
+  # 关键修复 2：因为我们指定了 efi_disk，必须明确指定主板 BIOS 类型为 UEFI (OVMF)
+  bios = "ovmf"
+
   efi_disk {
     datastore_id = "Ceph-pool"
     file_format  = "raw"
     type         = "4m"
   }
 
-  # 开启串口，Talos 的日志会输出到串口，方便调试
   vga {
     type = "serial0"
   }
