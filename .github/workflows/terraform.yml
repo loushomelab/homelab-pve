@@ -8,11 +8,17 @@ on:
 
 env:
   TF_LOG: INFO
+  # 从 GitHub Secrets 中读取变量并注入到环境中，供 Terraform Proxmox Provider 使用
+  PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
+  PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
 
 jobs:
   terraform:
     name: "Terraform"
     runs-on: [self-hosted, mac-studio] # Modify this to match your Mac Studio runner labels
+    defaults:
+      run:
+        working-directory: ./cluster # 指定执行目录为 cluster
     steps:
       - name: Checkout
         uses: actions/checkout@v4
