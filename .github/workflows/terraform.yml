@@ -8,8 +8,8 @@ on:
 
 env:
   TF_LOG: INFO
-  PROXMOX_VE_ENDPOINT: ${{ secrets.PROXMOX_VE_ENDPOINT }}
-  PROXMOX_VE_API_TOKEN: ${{ secrets.PROXMOX_VE_API_TOKEN }}
+  # PROXMOX_VE_ENDPOINT 和 PROXMOX_VE_API_TOKEN 现已迁移到 HCP Terraform Workspace Variables 中，
+  # 并在内网的 TFC Agent LXC 内执行，无需在 GitHub Actions 级别注入。
 
 jobs:
   terraform:
@@ -27,8 +27,7 @@ jobs:
         with:
           terraform_version: "1.15.8"
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-          # 关闭 wrapper。它会吞掉 exit code 导致诡异的 Annotations 报错，
-          # 且我们当前不需要将 plan 结果回写到 PR 评论。
+          # 关闭 wrapper，防止其吞掉 exit code
           terraform_wrapper: false 
 
       - name: Terraform Format
