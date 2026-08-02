@@ -25,14 +25,24 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   boot_order = ["ide2", "scsi0"]
 
-  # 关键：如果在某些节点上 KVM 硬件虚拟化不可用，可以通过 kvm_arguments 禁用硬件加速并使用 TCG，
-  # 或者更简单的方法是查阅 Proxmox 配置，但由于 Terraform provider 不直接支持关闭硬件加速的布尔值，
-  # 这个报错表明 3960x 节点本身的 BIOS 中虚拟化没有开启。
+  # 关闭 3960x 的 KVM 硬件虚拟化 (通过 machine 块的设置)
+  machine = var.node_name == "3960x" ? "q35" : ""
   
+  # 由于无法加载 kvm_amd，必须显式在操作系统配置里告诉 Proxmox 不要用 KVM
+  operating_system {
+    type = "l26"
+  }
+  
+  # 虽然 terraform-provider-proxmox 没有 boolean 的 kvm = false
+  # 但设置了 cpu_type 为 kvm64 (非 host) 并且 accel=tcg 会好些
+  # 在 3960x 上使用 qemu64 替代 host，以防止尝试使用宿主机不支持的虚拟化指令
   cpu {
     cores = var.cores
-    type  = "host"
+    type  = var.node_name == "3960x" ? "qemu64" : "host"
   }
+  
+  # 我们需要通过 kvm_arguments 强行关闭它
+  kvm_arguments = var.node_name == "3960x" ? "-machine accel=tcg" : ""
 
   memory {
     dedicated = var.memory
@@ -55,10 +65,6 @@ resource "proxmox_virtual_environment_vm" "this" {
   network_device {
     bridge      = "vmbr0"
     mac_address = var.mac_address
-  }
-
-  operating_system {
-    type = "l26"
   }
 
   bios = "ovmf"
