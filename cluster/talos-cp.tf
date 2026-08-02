@@ -1,12 +1,13 @@
 locals {
   talos_version = "v1.13.7"
-  talos_iso_url = "https://github.com/siderolabs/talos/releases/download/${local.talos_version}/talos-amd64.iso"
+  # 修正了下载链接：Talos 官方的 iso 名字叫 metal-amd64.iso
+  talos_iso_url = "https://github.com/siderolabs/talos/releases/download/${local.talos_version}/metal-amd64.iso"
 }
 
-# 1. 下载 Talos ISO 到 r720 的 local 存储
+# 1. 下载 Talos ISO
 resource "proxmox_virtual_environment_download_file" "talos_iso" {
   content_type = "iso"
-  datastore_id = "local"
+  datastore_id = "local" # ISO 镜像必须放在目录类型的存储 (如 local)，不能放在 Ceph (rbd)
   node_name    = "r720"
 
   url       = local.talos_iso_url
@@ -42,13 +43,13 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
     dedicated = 4096
   }
 
-  # 根据您的 r720 存储，这里选择 SSD (zfspool) 作为系统盘
+  # 系统盘配置为 Ceph-pool
   disk {
-    datastore_id = "SSD"
+    datastore_id = "Ceph-pool"
     interface    = "scsi0"
     size         = 40
     file_format  = "raw"
-    discard      = "on" # 开启 SSD TRIM 支持
+    discard      = "on" # 开启 TRIM 支持
   }
 
   # 挂载 Talos 安装镜像
@@ -66,9 +67,9 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
     type = "l26" # Linux kernel
   }
 
-  # UEFI 引导 (Talos 推荐) 需要一个 EFI 磁盘
+  # UEFI 引导 (Talos 推荐) 需要一个 EFI 磁盘，配置为 Ceph-pool
   efi_disk {
-    datastore_id = "SSD"
+    datastore_id = "Ceph-pool"
     file_format  = "raw"
     type         = "4m"
   }
