@@ -27,8 +27,8 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   cpu {
     cores = var.cores
-    # 这里我们只修改 CPU 模型为 qemu64
-    type  = var.node_name == "3960x" ? "qemu64" : "host"
+    # 全部恢复为 host，因为 3960x 已经开启了硬件虚拟化
+    type  = "host"
   }
 
   memory {
