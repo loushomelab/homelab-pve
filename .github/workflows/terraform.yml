@@ -27,9 +27,9 @@ jobs:
         with:
           terraform_version: "1.15.8"
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-          # 关键修改：开启 wrapper，这会让 Terraform 的输出被 Action 捕获并推送到 PR 评论中，
-          # 也能更好地和后续 API-driven 工具链兼容
-          terraform_wrapper: true 
+          # 关闭 wrapper。它会吞掉 exit code 导致诡异的 Annotations 报错，
+          # 且我们当前不需要将 plan 结果回写到 PR 评论。
+          terraform_wrapper: false 
 
       - name: Terraform Format
         id: fmt
