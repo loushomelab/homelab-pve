@@ -15,7 +15,7 @@ env:
 jobs:
   terraform:
     name: "Terraform"
-    runs-on: [self-hosted, mac-studio] # Modify this to match your Mac Studio runner labels
+    runs-on: [self-hosted, macOS, ARM64, langshi] # Modify this to match your Mac Studio runner labels
     defaults:
       run:
         working-directory: ./cluster # 指定执行目录为 cluster
