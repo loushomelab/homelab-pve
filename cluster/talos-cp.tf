@@ -11,6 +11,9 @@ resource "proxmox_virtual_environment_download_file" "talos_iso" {
 
   url       = local.talos_iso_url
   file_name = "talos-${local.talos_version}-amd64.iso"
+  
+  # 关键修复：允许 Terraform 覆盖已经存在（比如因为上一次失败任务遗留）的同名 ISO 文件
+  overwrite = true
 }
 
 # 2. 部署 Control Plane 虚拟机
@@ -22,14 +25,11 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
   lifecycle {
     ignore_changes = [
       node_name,
-      ipv4_addresses,
       mac_addresses,
       cdrom,
     ]
   }
 
-  # 修复 2：关闭 QEMU Guest Agent，Talos 在初始化完成前或未显式开启时，不会提供 agent 响应。
-  # 关闭它会让 Terraform 在发出创建命令后立即返回成功，而不再死等。
   agent {
     enabled = false
   }
