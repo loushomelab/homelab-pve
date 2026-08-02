@@ -28,11 +28,12 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
     ]
   }
 
+  # 修复 2：关闭 QEMU Guest Agent，Talos 在初始化完成前或未显式开启时，不会提供 agent 响应。
+  # 关闭它会让 Terraform 在发出创建命令后立即返回成功，而不再死等。
   agent {
-    enabled = true
+    enabled = false
   }
 
-  # 关键修复 1：明确指定启动顺序，先尝试从 CDROM (ide2) 启动，再从硬盘 (scsi0) 启动
   boot_order = ["ide2", "scsi0"]
 
   cpu {
@@ -66,7 +67,6 @@ resource "proxmox_virtual_environment_vm" "talos_cp_01" {
     type = "l26" 
   }
 
-  # 关键修复 2：因为我们指定了 efi_disk，必须明确指定主板 BIOS 类型为 UEFI (OVMF)
   bios = "ovmf"
 
   efi_disk {
