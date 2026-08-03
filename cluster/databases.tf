@@ -36,10 +36,10 @@ module "lxc_db_auth" {
   datastore_id     = "SSD"
   template_file_id = proxmox_virtual_environment_download_file.debian13_lxc.id
 
-  postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
-  redis_password       = data.doppler_secrets.db.map.DB_INFRA_REDIS_PASSWORD
-  ssh_public_key       = var.ssh_public_key
-  ssh_private_key = var.ssh_private_key
+  postgres_password = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
+  redis_password    = data.doppler_secrets.db.map.DB_INFRA_REDIS_PASSWORD
+  ssh_public_key    = var.HOMELAB_CICD_SSH_PUBLIC_KEY
+  ssh_private_key   = var.HOMELAB_CICD_SSH_PRIVATE_KEY
 }
 
 # 2. Obs DB (PostgreSQL Only)
@@ -54,10 +54,10 @@ module "lxc_db_obs" {
   datastore_id     = "SSD"
   template_file_id = proxmox_virtual_environment_download_file.debian13_lxc.id
 
-  postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
-  redis_password       = "" # Empty redis_password skips Redis external configuration
-  ssh_public_key       = var.ssh_public_key
-  ssh_private_key = var.ssh_private_key
+  postgres_password = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
+  redis_password    = "" # Empty redis_password skips Redis external configuration
+  ssh_public_key    = var.HOMELAB_CICD_SSH_PUBLIC_KEY
+  ssh_private_key   = var.HOMELAB_CICD_SSH_PRIVATE_KEY
 }
 
 # ==============================================================================
