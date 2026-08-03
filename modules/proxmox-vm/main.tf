@@ -20,7 +20,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   }
 
   agent {
-    enabled = false
+    enabled = true
   }
 
   boot_order = ["ide2", "scsi0"]
@@ -28,12 +28,14 @@ resource "proxmox_virtual_environment_vm" "this" {
   cpu {
     cores = var.cores
     # 全部恢复为 host，因为 3960x 已经开启了硬件虚拟化
-    type  = "host"
+    type = "host"
   }
 
   memory {
     dedicated = var.memory
   }
+
+  scsi_hardware = "virtio-scsi-pci" # Ensure VirtIO SCSI (NOT Single)
 
   disk {
     datastore_id = var.datastore_id
@@ -41,6 +43,8 @@ resource "proxmox_virtual_environment_vm" "this" {
     size         = 40
     file_format  = "raw"
     discard      = "on"
+    cache        = "writethrough"
+    ssd          = true
   }
 
   cdrom {
@@ -52,13 +56,15 @@ resource "proxmox_virtual_environment_vm" "this" {
   network_device {
     bridge      = "vmbr0"
     mac_address = var.mac_address
+    model       = "virtio"
   }
 
   operating_system {
     type = "l26"
   }
 
-  bios = "ovmf"
+  bios    = "ovmf"
+  machine = "q35"
 
   efi_disk {
     datastore_id = var.datastore_id
