@@ -28,7 +28,7 @@ module "talos_cp" {
     "cp-03" = { node = "3960x", id = 803, mac = "BC:24:11:00:00:03" }
   }
 
-  name        = "talos-${each.key}"
+  name        = "talos-v2-${each.key}"
   node_name   = each.value.node
   vm_id       = each.value.id
   mac_address = each.value.mac
@@ -47,7 +47,7 @@ module "talos_worker" {
     "worker-03" = { node = "3960x", id = 813, mac = "BC:24:11:00:01:03" }
   }
 
-  name        = "talos-${each.key}"
+  name        = "talos-v2-${each.key}"
   node_name   = each.value.node
   vm_id       = each.value.id
   mac_address = each.value.mac
