@@ -22,7 +22,7 @@ resource "proxmox_virtual_environment_vm" "this" {
     enabled = true
   }
 
-  boot_order = ["ide2", "scsi0"]
+  boot_order = ["scsi0", "ide2"]
 
   cpu {
     cores = var.cores
