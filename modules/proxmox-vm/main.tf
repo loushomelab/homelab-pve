@@ -72,7 +72,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   }
 
   vga {
-    type = "serial0"
+    type = "std"
   }
   serial_device {}
 }
