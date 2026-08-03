@@ -15,7 +15,7 @@ resource "proxmox_virtual_environment_download_file" "talos_iso" {
 
   url       = local.talos_iso_url
   file_name = "talos-${local.talos_version}-nocloud-qga-amd64.iso"
-  overwrite = true
+  overwrite = false
 }
 
 # 2. 部署 Control Plane 节点 (3台)
