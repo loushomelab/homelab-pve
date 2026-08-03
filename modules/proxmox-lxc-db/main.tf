@@ -4,54 +4,16 @@ terraform {
       source  = "bpg/proxmox"
       version = "~> 0.61.0"
     }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.5"
-    }
-  }
-}
-
-resource "proxmox_virtual_environment_file" "vendor_config" {
-  content_type = "snippets"
-  datastore_id = "local"
-  node_name    = var.node_name
-
-  source_raw {
-    data      = <<-EOT
-      #cloud-config
-      runcmd:
-        - apt-get update
-        - apt-get install -y postgresql postgresql-contrib redis-server
-        - systemctl enable postgresql redis-server
-        # Configure PostgreSQL to listen on all interfaces
-        - sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/postgresql/15/main/postgresql.conf
-        # Allow internal network to access PostgreSQL
-        - echo "host all all 192.168.50.0/23 md5" >> /etc/postgresql/15/main/pg_hba.conf
-        # Set postgres user password
-        - sudo -u postgres psql -c "ALTER USER postgres PASSWORD '${var.postgres_password}';"
-        # Configure Redis if password is provided
-        - |
-          if [ -n "${var.redis_password}" ]; then
-            sed -i "s/bind 127.0.0.1 -::1/bind 0.0.0.0/g" /etc/redis/redis.conf
-            sed -i 's/# requirepass foobared/requirepass ${var.redis_password}/g' /etc/redis/redis.conf
-          fi
-        # Restart services
-        - systemctl restart postgresql redis-server
-    EOT
-    file_name = "vendor-db-${var.vmid}.yaml"
   }
 }
 
 resource "proxmox_virtual_environment_container" "this" {
-  name      = var.name
-  node_name = var.node_name
-  vm_id     = var.vmid
+  node_name    = var.node_name
+  vm_id        = var.vmid
+  unprivileged = true
 
   initialization {
     hostname = var.name
-
-    # Inject our cloud-init vendor script
-    user_data_file_id = proxmox_virtual_environment_file.vendor_config.id
 
     ip_config {
       ipv4 {
@@ -59,6 +21,19 @@ resource "proxmox_virtual_environment_container" "this" {
         gateway = "192.168.50.254"
       }
     }
+
+    # Allow us to connect via SSH to provision
+    user_account {
+      keys = [var.ssh_public_key]
+    }
+  }
+
+  cpu {
+    cores = var.cores
+  }
+
+  memory {
+    dedicated = var.memory
   }
 
   disk {
@@ -80,6 +55,57 @@ resource "proxmox_virtual_environment_container" "this" {
   features {
     nesting = true
   }
+}
 
-  unprivileged = true
+# Add Proxmox HA Group resource to ensure HA for the database containers
+resource "proxmox_virtual_environment_haresource" "db_ha" {
+  depends_on = [proxmox_virtual_environment_container.this]
+
+  resource_id = "ct:${var.vmid}"
+  state       = "started"
+}
+
+# Provisioning using remote-exec (similar to the bootstrap agent LXC)
+resource "null_resource" "deploy_db" {
+  depends_on = [proxmox_virtual_environment_container.this]
+
+  triggers = {
+    container_id      = proxmox_virtual_environment_container.this.id
+    postgres_password = var.postgres_password
+    redis_password    = var.redis_password
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "root"
+    private_key = file(pathexpand(var.ssh_private_key_path))
+    host        = split("/", var.ipv4_address)[0]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "set -e",
+      "echo '=== 1. Wait for DNS and Network ==='",
+      "for i in {1..30}; do if ping -c 1 debian.org &> /dev/null; then break; fi; echo 'Waiting for network...'; sleep 2; done",
+
+      "echo '=== 2. Update and Install PostgreSQL & Redis ==='",
+      "apt-get update",
+      "apt-get install -y postgresql postgresql-contrib redis-server",
+
+      "echo '=== 3. Configure PostgreSQL ==='",
+      "sed -i \"s/#listen_addresses = 'localhost'/listen_addresses = '*'/g\" /etc/postgresql/15/main/postgresql.conf",
+      "echo 'host all all 192.168.50.0/23 md5' >> /etc/postgresql/15/main/pg_hba.conf",
+      "sudo -u postgres psql -c \"ALTER USER postgres PASSWORD '${var.postgres_password}';\"",
+
+      "echo '=== 4. Configure Redis (if password provided) ==='",
+      "if [ -n \"${var.redis_password}\" ]; then",
+      "  sed -i \"s/bind 127.0.0.1 -::1/bind 0.0.0.0/g\" /etc/redis/redis.conf",
+      "  sed -i 's/# requirepass foobared/requirepass ${var.redis_password}/g' /etc/redis/redis.conf",
+      "fi",
+
+      "echo '=== 5. Restart Services ==='",
+      "systemctl restart postgresql redis-server",
+      "systemctl enable postgresql redis-server"
+    ]
+  }
 }

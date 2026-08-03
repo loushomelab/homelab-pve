@@ -35,6 +35,18 @@ variable "disk_size" {
   default     = 20
 }
 
+variable "cores" {
+  description = "Number of CPU cores"
+  type        = number
+  default     = 2
+}
+
+variable "memory" {
+  description = "Dedicated memory in MB"
+  type        = number
+  default     = 2048
+}
+
 variable "template_file_id" {
   description = "The file ID of the LXC template in Proxmox"
   type        = string
@@ -51,4 +63,15 @@ variable "redis_password" {
   type        = string
   default     = ""
   sensitive   = true
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key for root user in LXC"
+  type        = string
+}
+
+variable "ssh_private_key_path" {
+  description = "Path to the SSH private key used by Terraform to provision LXC"
+  type        = string
+  default     = "~/.ssh/id_rsa"
 }

@@ -15,7 +15,12 @@ resource "proxmox_virtual_environment_download_file" "debian13_lxc" {
 # ==============================================================================
 data "doppler_secrets" "db" {
   config  = "prd"
-  project = "k8s" # Make sure this matches your Doppler project name
+  project = "k8s"
+}
+
+# Load SSH public key from local file (Assumes you have one configured)
+data "local_file" "ssh_public_key" {
+  filename = pathexpand("~/.ssh/id_rsa.pub")
 }
 
 # ==============================================================================
@@ -34,8 +39,10 @@ module "lxc_db_auth" {
   datastore_id     = "SSD"
   template_file_id = proxmox_virtual_environment_download_file.debian13_lxc.id
 
-  postgres_password = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
-  redis_password    = data.doppler_secrets.db.map.DB_INFRA_REDIS_PASSWORD
+  postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
+  redis_password       = data.doppler_secrets.db.map.DB_INFRA_REDIS_PASSWORD
+  ssh_public_key       = data.local_file.ssh_public_key.content
+  ssh_private_key_path = "~/.ssh/id_rsa"
 }
 
 # 2. Obs DB (PostgreSQL Only)
@@ -50,8 +57,10 @@ module "lxc_db_obs" {
   datastore_id     = "SSD"
   template_file_id = proxmox_virtual_environment_download_file.debian13_lxc.id
 
-  postgres_password = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
-  redis_password    = "" # Empty redis_password skips Redis external configuration
+  postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
+  redis_password       = "" # Empty redis_password skips Redis external configuration
+  ssh_public_key       = data.local_file.ssh_public_key.content
+  ssh_private_key_path = "~/.ssh/id_rsa"
 }
 
 # ==============================================================================
