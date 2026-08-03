@@ -39,7 +39,7 @@ module "lxc_db_auth" {
   postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
   redis_password       = data.doppler_secrets.db.map.DB_INFRA_REDIS_PASSWORD
   ssh_public_key       = var.ssh_public_key
-  ssh_private_key_path = "~/.ssh/id_rsa"
+  ssh_private_key = var.ssh_private_key
 }
 
 # 2. Obs DB (PostgreSQL Only)
@@ -57,7 +57,7 @@ module "lxc_db_obs" {
   postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
   redis_password       = "" # Empty redis_password skips Redis external configuration
   ssh_public_key       = var.ssh_public_key
-  ssh_private_key_path = "~/.ssh/id_rsa"
+  ssh_private_key = var.ssh_private_key
 }
 
 # ==============================================================================

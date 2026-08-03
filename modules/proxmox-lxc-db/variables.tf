@@ -70,7 +70,7 @@ variable "ssh_public_key" {
   type        = string
 }
 
-variable "ssh_private_key_path" {
+variable "ssh_private_key" {
   description = "Path to the SSH private key used by Terraform to provision LXC"
   type        = string
   default     = "~/.ssh/id_rsa"
