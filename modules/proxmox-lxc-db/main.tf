@@ -78,7 +78,7 @@ resource "null_resource" "deploy_db" {
   connection {
     type        = "ssh"
     user        = "root"
-    private_key = file(pathexpand(var.ssh_private_key_path))
+    private_key = var.ssh_private_key
     host        = split("/", var.ipv4_address)[0]
   }
 

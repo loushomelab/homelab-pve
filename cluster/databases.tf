@@ -19,9 +19,6 @@ data "doppler_secrets" "db" {
 }
 
 # Load SSH public key from local file (Assumes you have one configured)
-data "local_file" "ssh_public_key" {
-  filename = pathexpand("~/.ssh/id_rsa.pub")
-}
 
 # ==============================================================================
 # 🛠️ LXC Database Containers
@@ -41,7 +38,7 @@ module "lxc_db_auth" {
 
   postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
   redis_password       = data.doppler_secrets.db.map.DB_INFRA_REDIS_PASSWORD
-  ssh_public_key       = data.local_file.ssh_public_key.content
+  ssh_public_key       = var.ssh_public_key
   ssh_private_key_path = "~/.ssh/id_rsa"
 }
 
@@ -59,7 +56,7 @@ module "lxc_db_obs" {
 
   postgres_password    = data.doppler_secrets.db.map.DB_INFRA_PG_PASSWORD
   redis_password       = "" # Empty redis_password skips Redis external configuration
-  ssh_public_key       = data.local_file.ssh_public_key.content
+  ssh_public_key       = var.ssh_public_key
   ssh_private_key_path = "~/.ssh/id_rsa"
 }
 
