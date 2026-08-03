@@ -10,6 +10,15 @@ terraform {
   }
 
   required_providers {
+    doppler = {
+      source  = "dopplerhq/doppler"
+      version = "~> 1.7.0"
+    }
+    postgresql = {
+      source  = "cyrilgdn/postgresql"
+      version = "~> 1.25.0"
+    }
+
     proxmox = {
       source  = "bpg/proxmox"
       version = "~> 0.61.0"
@@ -23,3 +32,8 @@ provider "proxmox" {
   # PROXMOX_VE_API_TOKEN (e.g. root@pam!terraform=...)
   insecure = true
 }
+
+provider "doppler" {
+  # Doppler Token should be provided via HCP Terraform Environment Variable: DOPPLER_TOKEN
+}
+
