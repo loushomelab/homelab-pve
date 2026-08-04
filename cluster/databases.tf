@@ -6,7 +6,7 @@ resource "proxmox_virtual_environment_download_file" "debian13_lxc" {
   datastore_id = "local"
   node_name    = "r720" # Default node for template download
 
-  url       = "http://download.proxmox.com/images/system/debian-13-standard_13.0-1_amd64.tar.zst"
+  url       = "http://download.proxmox.com/images/system/debian-13-standard_13.6-1_amd64.tar.zst"
   file_name = "debian-13-standard.tar.zst"
 }
 
