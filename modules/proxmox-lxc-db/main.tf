@@ -22,6 +22,10 @@ resource "proxmox_virtual_environment_container" "this" {
       }
     }
 
+    dns {
+      servers = ["198.18.0.2", "1.1.1.1"]
+    }
+
     # Allow us to connect via SSH to provision
     user_account {
       keys = [var.ssh_public_key]
@@ -80,13 +84,16 @@ resource "null_resource" "deploy_db" {
     user        = "root"
     private_key = var.ssh_private_key
     host        = split("/", var.ipv4_address)[0]
+    timeout     = "2m"
   }
 
   provisioner "remote-exec" {
     inline = [
       "set -e",
+      "export DEBIAN_FRONTEND=noninteractive",
+
       "echo '=== 1. Wait for DNS and Network ==='",
-      "for i in {1..30}; do if ping -c 1 debian.org &> /dev/null; then break; fi; echo 'Waiting for network...'; sleep 2; done",
+      "for i in {1..30}; do if ping -c 1 debian.org &> /dev/null; then echo 'Network is up!'; break; fi; echo 'Waiting for network...'; sleep 2; done",
 
       "echo '=== 2. Update and Install PostgreSQL & Redis ==='",
       "apt-get update",
