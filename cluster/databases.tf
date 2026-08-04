@@ -43,7 +43,7 @@ provider "postgresql" {
   port     = 5432
   database = "postgres"
   username = "postgres"
-  password = data.doppler_secrets.db.map.DB_AUTH_PG_PASSWORD
+  password = data.doppler_secrets.db.map.DB_OBS_PG_PASSWORD
   sslmode  = "disable"
 }
 
