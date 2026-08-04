@@ -14,7 +14,7 @@ resource "proxmox_virtual_environment_download_file" "debian13_lxc" {
 # 🔐 Secrets via Doppler
 # ==============================================================================
 data "doppler_secrets" "db" {
-  config  = "prd"
+  config  = "prd_terraform"
   project = "k8s"
 }
 
