@@ -23,6 +23,11 @@ terraform {
       source  = "bpg/proxmox"
       version = "~> 0.61.0"
     }
+
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.24.0"
+    }
   }
 }
 
