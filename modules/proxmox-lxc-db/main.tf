@@ -23,7 +23,7 @@ resource "proxmox_virtual_environment_container" "this" {
     }
 
     dns {
-      servers = ["198.18.0.2", "1.1.1.1"]
+      servers = ["198.18.0.2"]
     }
 
     # Allow us to connect via SSH to provision
@@ -100,8 +100,10 @@ resource "null_resource" "deploy_db" {
       "apt-get install -y postgresql postgresql-contrib redis-server",
 
       "echo '=== 3. Configure PostgreSQL ==='",
-      "sed -i \"s/#listen_addresses = 'localhost'/listen_addresses = '*'/g\" /etc/postgresql/15/main/postgresql.conf",
-      "echo 'host all all 192.168.50.0/23 md5' >> /etc/postgresql/15/main/pg_hba.conf",
+      "PG_VERSION=$(ls /etc/postgresql/ | head -n 1)",
+      "echo \"Detected PostgreSQL version: $PG_VERSION\"",
+      "sed -i \"s/#listen_addresses = 'localhost'/listen_addresses = '*'/g\" /etc/postgresql/$PG_VERSION/main/postgresql.conf",
+      "echo 'host all all 192.168.50.0/23 md5' >> /etc/postgresql/$PG_VERSION/main/pg_hba.conf",
       "sudo -u postgres psql -c \"ALTER USER postgres PASSWORD '${var.postgres_password}';\"",
 
       "echo '=== 4. Configure Redis (if password provided) ==='",

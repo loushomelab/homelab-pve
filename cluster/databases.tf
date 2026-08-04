@@ -47,7 +47,7 @@ module "lxc_db_obs" {
   source = "../modules/proxmox-lxc-db"
 
   name             = "lxc-db-obs"
-  node_name        = "1920x" # Can be placed on another node for distribution
+  node_name        = "r720" # Can be placed on another node for distribution
   vmid             = 152
   ipv4_address     = "192.168.50.152/23"
   mac_address      = "BC:24:11:63:12:13"
