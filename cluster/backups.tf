@@ -1,3 +1,7 @@
+# 读取 Doppler 里的 PBS 和集群相关配置
+# 注意：前提是当前绑定的 DOPPLER_TOKEN 对应的项目/环境中包含以下 Secret
+data "doppler_secrets" "pbs" {}
+
 # 1. 将 PBS 挂载为 PVE 的全局存储
 resource "proxmox_virtual_environment_storage" "pbs_cluster_storage" {
   content_types = ["backup"]
@@ -5,11 +9,11 @@ resource "proxmox_virtual_environment_storage" "pbs_cluster_storage" {
   datastore_id  = "pbs-lxc" 
   
   pbs {
-    server      = var.PBS_HOST
-    datastore   = var.PBS_DATASTORE
-    username    = var.PBS_TOKEN_ID
-    password    = var.PBS_TOKEN_SECRET
-    fingerprint = var.PBS_FINGERPRINT
+    server      = data.doppler_secrets.pbs.map.PBS_HOST
+    datastore   = data.doppler_secrets.pbs.map.PBS_DATASTORE
+    username    = data.doppler_secrets.pbs.map.PBS_TOKEN_ID
+    password    = data.doppler_secrets.pbs.map.PBS_TOKEN_SECRET
+    fingerprint = data.doppler_secrets.pbs.map.PBS_FINGERPRINT
   }
 }
 
@@ -24,7 +28,7 @@ resource "proxmox_virtual_environment_cluster_backup" "daily_all_vms" {
   all      = true
 
   mail_notification = "always"
-  mail_to           = var.HOMELAB_EMAIL
+  mail_to           = data.doppler_secrets.pbs.map.HOMELAB_EMAIL
   
   compress = "zstd"
 
