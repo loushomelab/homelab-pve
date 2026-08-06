@@ -1,40 +1,39 @@
 # 读取 Doppler 里的 PBS 和集群相关配置
-# 注意：前提是当前绑定的 DOPPLER_TOKEN 对应的项目/环境中包含以下 Secret
-data "doppler_secrets" "pbs" {}
-
-# 1. 将 PBS 挂载为 PVE 的全局存储
-resource "proxmox_virtual_environment_storage" "pbs_cluster_storage" {
-  content_types = ["backup"]
-  
-  datastore_id  = "pbs-lxc" 
-  
-  pbs {
-    server      = data.doppler_secrets.pbs.map.PBS_HOST
-    datastore   = data.doppler_secrets.pbs.map.PBS_DATASTORE
-    username    = data.doppler_secrets.pbs.map.PBS_TOKEN_ID
-    password    = data.doppler_secrets.pbs.map.PBS_TOKEN_SECRET
-    fingerprint = data.doppler_secrets.pbs.map.PBS_FINGERPRINT
-  }
+data "doppler_secrets" "pbs" {
+  config  = "prd"
+  project = "k8s" 
 }
 
-# 2. 全局每日备份计划
-resource "proxmox_virtual_environment_cluster_backup" "daily_all_vms" {
-  node_name  = "r720" 
-  
-  storage_id = proxmox_virtual_environment_storage.pbs_cluster_storage.datastore_id
+# 1. 挂载 Proxmox Backup Server (PBS) 存储
+# 在 PBS 中，完全可以使用 API Token 进行认证。
+# Proxmox 官方机制是将 Token ID 作为 username（例如：user@pbs!token），Token 密钥作为 password。
+resource "proxmox_storage_pbs" "pbs_lxc" {
+  id          = "pbs-lxc"
+  server      = data.doppler_secrets.pbs.map.PBS_HOST
+  datastore   = data.doppler_secrets.pbs.map.PBS_DATASTORE
+  username    = data.doppler_secrets.pbs.map.PBS_TOKEN_ID
+  password    = data.doppler_secrets.pbs.map.PBS_TOKEN_SECRET
+  fingerprint = data.doppler_secrets.pbs.map.PBS_FINGERPRINT
 
+  content = ["backup"]
+}
+
+# 2. 配置 PVE 的全局备份任务
+resource "proxmox_backup_job" "pbs_daily_backup" {
+  id       = "pbs-daily-backup"
+  node     = "r720"
+  storage  = proxmox_storage_pbs.pbs_lxc.id
   schedule = "02:00"
   mode     = "snapshot"
   all      = true
-
-  mail_notification = "always"
-  mail_to           = data.doppler_secrets.pbs.map.HOMELAB_EMAIL
   
-  compress = "zstd"
+  mailnotification = "always"
+  mailto           = [data.doppler_secrets.pbs.map.HOMELAB_EMAIL]
+  compress         = "zstd"
 
-  retention {
-    keep_last   = 7
-    keep_daily  = 7
-    keep_weekly = 4
+  prune_backups = {
+    keep-last   = "7"
+    keep-daily  = "7"
+    keep-weekly = "4"
   }
 }
