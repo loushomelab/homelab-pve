@@ -1,7 +1,7 @@
 # 读取 Doppler 里的 PBS 和集群相关配置
 data "doppler_secrets" "pbs" {
   config  = "prd"
-  project = "k8s" 
+  project = "k8s"
 }
 
 # 1. 挂载 Proxmox Backup Server (PBS) 存储
@@ -26,7 +26,7 @@ resource "proxmox_backup_job" "pbs_daily_backup" {
   schedule = "02:00"
   mode     = "snapshot"
   all      = true
-  
+
   mailnotification = "always"
   mailto           = [data.doppler_secrets.pbs.map.HOMELAB_EMAIL]
   compress         = "zstd"
