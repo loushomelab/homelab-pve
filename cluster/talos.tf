@@ -7,7 +7,7 @@ locals {
 }
 
 # 1. 在所有目标节点的 local 存储上下载 Talos ISO
-resource "proxmox_virtual_environment_download_file" "talos_iso" {
+resource "proxmox_download_file" "talos_iso" {
   for_each     = toset(local.target_nodes)
   content_type = "iso"
   datastore_id = "local"
@@ -34,7 +34,7 @@ module "talos_cp" {
   mac_address = each.value.mac
   cores       = 4
   memory      = 4096
-  iso_file_id = proxmox_virtual_environment_download_file.talos_iso[each.value.node].id
+  iso_file_id = proxmox_download_file.talos_iso[each.value.node].id
 }
 
 # 3. 部署 Worker 节点 (3台)
@@ -53,13 +53,13 @@ module "talos_worker" {
   mac_address = each.value.mac
   cores       = 8
   memory      = 16384
-  iso_file_id = proxmox_virtual_environment_download_file.talos_iso[each.value.node].id
+  iso_file_id = proxmox_download_file.talos_iso[each.value.node].id
 }
 
 # --- 状态迁移块 (防止重建之前已创建好的 801 节点) ---
 moved {
   from = proxmox_virtual_environment_download_file.talos_iso
-  to   = proxmox_virtual_environment_download_file.talos_iso["r720"]
+  to   = proxmox_download_file.talos_iso["r720"]
 }
 
 moved {
