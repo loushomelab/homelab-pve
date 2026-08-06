@@ -5,7 +5,7 @@ terraform {
     organization = "loushomelab" # Please change this if your HCP organization name is different
 
     workspaces {
-      name = "homelab-pve-cluster"
+      name = "homelab-pve"
     }
   }
 
