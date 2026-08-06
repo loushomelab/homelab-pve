@@ -1,29 +1,17 @@
 # ==============================================================================
-# 📦 Proxmox Backup Server (PBS) Datastore - iSCSI & LVM Cluster Storage
+# 📦 Proxmox Backup Server (PBS) Datastore - LVM Cluster Storage
 # ==============================================================================
-# This configuration defines the shared block storage for the PBS LXC container.
+# This configuration defines the shared LVM block storage for the PBS LXC container.
 # It enables high-availability (HA) and live migration (drift) of the PBS LXC
 # between different nodes in the PVE cluster by utilizing LVM-on-iSCSI.
+#
+# NOTE: The base iSCSI storage ("pbstorage-iscsi") has been manually configured
+# on the PVE host via 'pvesm add' to handle the iSCSI portal logins natively.
 
-resource "proxmox_virtual_environment_storage" "pbs_iscsi" {
-  storage_id    = "pbstorage-iscsi"
-  nodes         = ["n100x8", "r720", "1920x", "3960x"]
-  content_types = ["images"]
-
-  iscsi {
-    portal = "192.168.50.76:3260"
-    target = "iqn.2005-10.org.freenas.ctl:pbstorage"
-  }
-}
-
-resource "proxmox_virtual_environment_storage" "pbs_lvm" {
-  storage_id    = "pbstorage-lvm"
-  nodes         = ["n100x8", "r720", "1920x", "3960x"]
-  content_types = ["images", "rootdir"]
-
-  lvm {
-    vg_name     = "pbstorage-vg"
-    base_volume = proxmox_virtual_environment_storage.pbs_iscsi.storage_id
-    shared      = true
-  }
+resource "proxmox_storage_lvm" "pbs_lvm" {
+  id           = "pbstorage-lvm"
+  nodes        = ["n100x8", "r720", "1920x", "3960x"]
+  volume_group = "pbstorage-vg"
+  content      = ["images", "rootdir"]
+  shared       = true
 }
