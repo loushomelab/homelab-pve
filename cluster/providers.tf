@@ -19,6 +19,11 @@ terraform {
       version = "~> 1.25.0"
     }
 
+    minio = {
+      source  = "aminueza/minio"
+      version = "~> 3.40.1"
+    }
+
     proxmox = {
       source  = "bpg/proxmox"
       version = "~> 0.111.1"
