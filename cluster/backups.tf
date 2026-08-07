@@ -21,7 +21,6 @@ resource "proxmox_storage_pbs" "pbs_lxc" {
 # 2. 配置 PVE 的全局备份任务
 resource "proxmox_backup_job" "pbs_daily_backup" {
   id       = "pbs-daily-backup"
-  node     = "r720"
   storage  = proxmox_storage_pbs.pbs_lxc.id
   schedule = "02:00"
   mode     = "snapshot"
