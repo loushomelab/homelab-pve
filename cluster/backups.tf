@@ -11,9 +11,9 @@ resource "proxmox_storage_pbs" "pbs_lxc" {
   id          = "pbs-lxc"
   server      = data.doppler_secrets.pbs.map.PBS_HOST
   datastore   = data.doppler_secrets.pbs.map.PBS_DATASTORE
-  username    = trimspace(data.doppler_secrets.pbs.map.PBS_TOKEN_ID)
-  password    = trimspace(data.doppler_secrets.pbs.map.PBS_TOKEN_SECRET)
-  fingerprint = trimspace(data.doppler_secrets.pbs.map.PBS_FINGERPRINT)
+  username    = data.doppler_secrets.pbs.map.PBS_TF_USERNAME
+  password    = data.doppler_secrets.pbs.map.PBS_TF_PASSWORD
+  fingerprint = data.doppler_secrets.pbs.map.PBS_FINGERPRINT
 
   content = ["backup"]
 }
