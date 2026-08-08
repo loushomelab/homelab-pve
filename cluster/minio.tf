@@ -32,24 +32,20 @@ resource "minio_iam_user" "loki_user" {
 }
 
 resource "minio_iam_policy" "loki_policy" {
-  name   = "loki-policy"
-  policy = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:*"
-      ],
-      "Resource": [
-        "arn:aws:s3:::s3-loki",
-        "arn:aws:s3:::s3-loki/*"
-      ]
-    }
-  ]
-}
-EOT
+  name = "loki-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = ["s3:*"]
+        Resource = [
+          "arn:aws:s3:::s3-loki",
+          "arn:aws:s3:::s3-loki/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "minio_iam_user_policy_attachment" "loki_attachment" {
@@ -72,24 +68,20 @@ resource "minio_iam_user" "mimir_user" {
 }
 
 resource "minio_iam_policy" "mimir_policy" {
-  name   = "mimir-policy"
-  policy = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:*"
-      ],
-      "Resource": [
-        "arn:aws:s3:::s3-mimir",
-        "arn:aws:s3:::s3-mimir/*"
-      ]
-    }
-  ]
-}
-EOT
+  name = "mimir-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = ["s3:*"]
+        Resource = [
+          "arn:aws:s3:::s3-mimir",
+          "arn:aws:s3:::s3-mimir/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "minio_iam_user_policy_attachment" "mimir_attachment" {
@@ -119,24 +111,20 @@ resource "minio_iam_user" "tempo_user" {
 }
 
 resource "minio_iam_policy" "tempo_policy" {
-  name   = "tempo-policy"
-  policy = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:*"
-      ],
-      "Resource": [
-        "arn:aws:s3:::s3-tempo",
-        "arn:aws:s3:::s3-tempo/*"
-      ]
-    }
-  ]
-}
-EOT
+  name = "tempo-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = ["s3:*"]
+        Resource = [
+          "arn:aws:s3:::s3-tempo",
+          "arn:aws:s3:::s3-tempo/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "minio_iam_user_policy_attachment" "tempo_attachment" {
@@ -151,27 +139,59 @@ resource "minio_iam_user" "pyroscope_user" {
 }
 
 resource "minio_iam_policy" "pyroscope_policy" {
-  name   = "pyroscope-policy"
-  policy = <<EOT
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:*"
-      ],
-      "Resource": [
-        "arn:aws:s3:::s3-pyroscope",
-        "arn:aws:s3:::s3-pyroscope/*"
-      ]
-    }
-  ]
-}
-EOT
+  name = "pyroscope-policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = ["s3:*"]
+        Resource = [
+          "arn:aws:s3:::s3-pyroscope",
+          "arn:aws:s3:::s3-pyroscope/*"
+        ]
+      }
+    ]
+  })
 }
 
 resource "minio_iam_user_policy_attachment" "pyroscope_attachment" {
   user_name   = minio_iam_user.pyroscope_user.name
   policy_name = minio_iam_policy.pyroscope_policy.name
+}
+
+# ==============================================================================
+# 🪣 Umami S3 Resources
+# ==============================================================================
+resource "minio_s3_bucket" "umami_data" {
+  bucket = "s3-umami"
+}
+
+resource "minio_iam_user" "umami_user" {
+  name          = "umami"
+  secret        = data.doppler_secrets.minio.map.S3_UMAMI_PASSWORD
+  force_destroy = true
+}
+
+resource "minio_iam_policy" "umami_policy" {
+  name = "umami-policy"
+  # 这里演示用 jsonencode() 替代原来丑陋的 Heredoc (<<EOT) 语法
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = ["s3:*"]
+        Resource = [
+          "arn:aws:s3:::s3-umami",
+          "arn:aws:s3:::s3-umami/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "minio_iam_user_policy_attachment" "umami_attachment" {
+  user_name   = minio_iam_user.umami_user.name
+  policy_name = minio_iam_policy.umami_policy.name
 }
