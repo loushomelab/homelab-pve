@@ -26,8 +26,8 @@ resource "minio_s3_bucket" "loki_data" {
 }
 
 resource "minio_iam_user" "loki_user" {
-  name          = "loki"
-  secret        = data.doppler_secrets.minio.map.S3_LOKI_PASSWORD
+  name          = data.doppler_secrets.minio.map.S3_LOKI_ACCESS_KEY
+  secret        = data.doppler_secrets.minio.map.S3_LOKI_SECRET_KEY
   force_destroy = true
 }
 
@@ -62,8 +62,8 @@ resource "minio_s3_bucket" "mimir_data" {
 }
 
 resource "minio_iam_user" "mimir_user" {
-  name          = "mimir"
-  secret        = data.doppler_secrets.minio.map.S3_MIMIR_PASSWORD
+  name          = data.doppler_secrets.minio.map.S3_MIMIR_ACCESS_KEY
+  secret        = data.doppler_secrets.minio.map.S3_MIMIR_SECRET_KEY
   force_destroy = true
 }
 
@@ -105,8 +105,8 @@ resource "minio_s3_bucket" "pyroscope_data" {
 }
 
 resource "minio_iam_user" "tempo_user" {
-  name          = "tempo"
-  secret        = data.doppler_secrets.minio.map.S3_TEMPO_PASSWORD
+  name          = data.doppler_secrets.minio.map.S3_TEMPO_ACCESS_KEY
+  secret        = data.doppler_secrets.minio.map.S3_TEMPO_SECRET_KEY
   force_destroy = true
 }
 
@@ -133,8 +133,8 @@ resource "minio_iam_user_policy_attachment" "tempo_attachment" {
 }
 
 resource "minio_iam_user" "pyroscope_user" {
-  name          = "pyroscope"
-  secret        = data.doppler_secrets.minio.map.S3_PYROSCOPE_PASSWORD
+  name          = data.doppler_secrets.minio.map.S3_PYROSCOPE_ACCESS_KEY
+  secret        = data.doppler_secrets.minio.map.S3_PYROSCOPE_SECRET_KEY
   force_destroy = true
 }
 
@@ -168,8 +168,8 @@ resource "minio_s3_bucket" "umami_data" {
 }
 
 resource "minio_iam_user" "umami_user" {
-  name          = "umami"
-  secret        = data.doppler_secrets.minio.map.S3_UMAMI_PASSWORD
+  name          = data.doppler_secrets.minio.map.S3_UMAMI_ACCESS_KEY
+  secret        = data.doppler_secrets.minio.map.S3_UMAMI_SECRET_KEY
   force_destroy = true
 }
 
