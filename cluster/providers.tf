@@ -12,11 +12,11 @@ terraform {
   required_providers {
     doppler = {
       source  = "dopplerhq/doppler"
-      version = "~> 1.7.0"
+      version = "~> 1.21.0"
     }
     postgresql = {
       source  = "cyrilgdn/postgresql"
-      version = "~> 1.25.0"
+      version = "~> 1.27.0"
     }
 
     minio = {
@@ -31,7 +31,7 @@ terraform {
 
     talos = {
       source  = "siderolabs/talos"
-      version = "~> 0.7.0"
+      version = "~> 0.11.0"
     }
   }
 }
