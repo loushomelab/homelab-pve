@@ -102,7 +102,7 @@ data "talos_machine_configuration" "controlplane" {
           config = {
             "192.168.50.125:8080" = {
               tls = {
-                insecure = true
+                insecureSkipVerify = true
               }
             }
           }
@@ -144,7 +144,7 @@ data "talos_machine_configuration" "worker" {
           config = {
             "192.168.50.125:8080" = {
               tls = {
-                insecure = true
+                insecureSkipVerify = true
               }
             }
           }
@@ -153,3 +153,17 @@ data "talos_machine_configuration" "worker" {
     })
   ]
 }
+
+# 7. Talos Client Configuration (talosconfig)
+data "talos_client_configuration" "this" {
+  cluster_name         = var.cluster_name
+  client_configuration = talos_machine_secrets.this.client_configuration
+  endpoints            = [for name, node in module.talos_cp : try(node.ipv4_addresses[1][0], "")]
+}
+
+# 8. Kubernetes Kubeconfig
+resource "talos_cluster_kubeconfig" "this" {
+  client_configuration = talos_machine_secrets.this.client_configuration
+  node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
+}
+
