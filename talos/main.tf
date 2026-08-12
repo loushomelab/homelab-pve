@@ -2,77 +2,27 @@ locals {
   talos_version         = "v1.13.7"
   schematic_id          = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
   talos_installer_image = "factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
-  # Talos Image Factory schematic ID: ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515 (includes siderolabs/qemu-guest-agent)
-  talos_iso_url = "https://factory.talos.dev/image/${local.schematic_id}/${local.talos_version}/nocloud-amd64.iso"
 
-  target_nodes = ["r720", "1920x", "3960x"]
+  controlplane_nodes = ["cp-01", "cp-02", "cp-03"]
+  worker_nodes       = ["worker-01", "worker-02", "worker-03"]
 }
 
-# 1. 在所有目标节点的 local 存储上下载 Talos ISO
-resource "proxmox_download_file" "talos_iso" {
-  for_each     = toset(local.target_nodes)
-  content_type = "iso"
-  datastore_id = "local"
-  node_name    = each.key
+# 1. 引用 01-vms Workspace 的输出状态获取节点 IP
+data "terraform_remote_state" "vms" {
+  backend = "remote"
 
-  url       = local.talos_iso_url
-  file_name = "talos-${local.talos_version}-nocloud-qga-amd64.iso"
-  overwrite = false
-}
-
-# 2. 部署 Control Plane 节点 (3台)
-module "talos_cp" {
-  source = "../modules/proxmox-vm"
-
-  for_each = {
-    "cp-01" = { node = "r720", id = 801, mac = "BC:24:11:00:00:01" }
-    "cp-02" = { node = "1920x", id = 802, mac = "BC:24:11:00:00:02" }
-    "cp-03" = { node = "3960x", id = 803, mac = "BC:24:11:00:00:03" }
+  config = {
+    organization = "loushomelab"
+    workspaces = {
+      name = "homelab-pve-vms"
+    }
   }
-
-  name        = "talos-${each.key}"
-  node_name   = each.value.node
-  vm_id       = each.value.id
-  mac_address = each.value.mac
-  cores       = 4
-  memory      = 4096
-  iso_file_id = proxmox_download_file.talos_iso[each.value.node].id
 }
 
-# 3. 部署 Worker 节点 (3台)
-module "talos_worker" {
-  source = "../modules/proxmox-vm"
-
-  for_each = {
-    "worker-01" = { node = "r720", id = 811, mac = "BC:24:11:00:01:01" }
-    "worker-02" = { node = "1920x", id = 812, mac = "BC:24:11:00:01:02" }
-    "worker-03" = { node = "3960x", id = 813, mac = "BC:24:11:00:01:03" }
-  }
-
-  name        = "talos-${each.key}"
-  node_name   = each.value.node
-  vm_id       = each.value.id
-  mac_address = each.value.mac
-  cores       = 8
-  memory      = 16384
-  iso_file_id = proxmox_download_file.talos_iso[each.value.node].id
-}
-
-# --- 状态迁移块 (防止重建之前已创建好的 801 节点) ---
-moved {
-  from = proxmox_virtual_environment_download_file.talos_iso
-  to   = proxmox_download_file.talos_iso["r720"]
-}
-
-moved {
-  from = proxmox_virtual_environment_vm.talos_cp_01
-  to   = module.talos_cp["cp-01"].proxmox_virtual_environment_vm.this
-}
-
-# 4. Talos Machine Secrets
+# 2. Talos Machine Secrets
 resource "talos_machine_secrets" "this" {}
 
-# 5. Control Plane Machine Configuration with Zot Mirror Patches
+# 3. Control Plane Machine Configuration with Zot Mirror Patches
 data "talos_machine_configuration" "controlplane" {
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
@@ -89,7 +39,6 @@ data "talos_machine_configuration" "controlplane" {
           "net.ipv6.conf.default.disable_ipv6" = "1"
         }
         registries = {
-          # 1. 映射常见 Registry 域名到 Zot
           mirrors = {
             "docker.io" = {
               endpoints = ["http://192.168.50.125:8080/v2/docker.io"]
@@ -107,7 +56,6 @@ data "talos_machine_configuration" "controlplane" {
               endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
             }
           }
-          # 2. 允许 HTTP (非 HTTPS) 内部连接
           config = {
             "192.168.50.125:8080" = {
               tls = {
@@ -121,7 +69,7 @@ data "talos_machine_configuration" "controlplane" {
   ]
 }
 
-# 6. Worker Machine Configuration with Zot Mirror Patches
+# 4. Worker Machine Configuration with Zot Mirror Patches
 data "talos_machine_configuration" "worker" {
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
@@ -138,7 +86,6 @@ data "talos_machine_configuration" "worker" {
           "net.ipv6.conf.default.disable_ipv6" = "1"
         }
         registries = {
-          # 1. 映射常见 Registry 域名到 Zot
           mirrors = {
             "docker.io" = {
               endpoints = ["http://192.168.50.125:8080/v2/docker.io"]
@@ -156,7 +103,6 @@ data "talos_machine_configuration" "worker" {
               endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
             }
           }
-          # 2. 允许 HTTP (非 HTTPS) 内部连接
           config = {
             "192.168.50.125:8080" = {
               tls = {
@@ -170,39 +116,39 @@ data "talos_machine_configuration" "worker" {
   ]
 }
 
-# 7. 应用 Machine Configuration 到 Control Plane 节点
+# 5. 应用 Machine Configuration 到 Control Plane 节点
 resource "talos_machine_configuration_apply" "controlplane" {
-  for_each                    = module.talos_cp
+  for_each                    = toset(local.controlplane_nodes)
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
-  node                        = try(each.value.ipv4_addresses[1][0], "")
+  node                        = try(data.terraform_remote_state.vms.outputs.talos_control_plane_ips[each.key], "")
 }
 
-# 8. 应用 Machine Configuration 到 Worker 节点
+# 6. 应用 Machine Configuration 到 Worker 节点
 resource "talos_machine_configuration_apply" "worker" {
-  for_each                    = module.talos_worker
+  for_each                    = toset(local.worker_nodes)
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
-  node                        = try(each.value.ipv4_addresses[1][0], "")
+  node                        = try(data.terraform_remote_state.vms.outputs.talos_worker_ips[each.key], "")
 }
 
-# 9. 自动 Bootstrap 首个 Control Plane 节点
+# 7. 自动 Bootstrap 首个 Control Plane 节点
 resource "talos_machine_bootstrap" "this" {
   depends_on           = [talos_machine_configuration_apply.controlplane]
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
+  node                 = try(data.terraform_remote_state.vms.outputs.talos_control_plane_ips["cp-01"], "192.168.50.110")
 }
 
-# 10. 生成 Talos 客户端配置 (talosconfig)
+# 8. 生成 Talos 客户端配置 (talosconfig)
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
-  endpoints            = [for name, node in module.talos_cp : try(node.ipv4_addresses[1][0], "")]
+  endpoints            = [for ip in values(data.terraform_remote_state.vms.outputs.talos_control_plane_ips) : ip]
 }
 
-# 11. 自动生成 Kubernetes Kubeconfig
+# 9. 自动生成 Kubernetes Kubeconfig
 resource "talos_cluster_kubeconfig" "this" {
   depends_on           = [talos_machine_bootstrap.this]
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
+  node                 = try(data.terraform_remote_state.vms.outputs.talos_control_plane_ips["cp-01"], "192.168.50.110")
 }
