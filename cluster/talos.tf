@@ -1,7 +1,9 @@
 locals {
-  talos_version = "v1.13.7"
+  talos_version         = "v1.13.7"
+  schematic_id          = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
+  talos_installer_image = "factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
   # Talos Image Factory schematic ID: ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515 (includes siderolabs/qemu-guest-agent)
-  talos_iso_url = "https://factory.talos.dev/image/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515/${local.talos_version}/nocloud-amd64.iso"
+  talos_iso_url = "https://factory.talos.dev/image/${local.schematic_id}/${local.talos_version}/nocloud-amd64.iso"
 
   target_nodes = ["r720", "1920x", "3960x"]
 }
@@ -79,6 +81,9 @@ data "talos_machine_configuration" "controlplane" {
   config_patches = [
     yamlencode({
       machine = {
+        install = {
+          image = local.talos_installer_image
+        }
         sysctls = {
           "net.ipv6.conf.all.disable_ipv6"     = "1"
           "net.ipv6.conf.default.disable_ipv6" = "1"
@@ -125,6 +130,9 @@ data "talos_machine_configuration" "worker" {
   config_patches = [
     yamlencode({
       machine = {
+        install = {
+          image = local.talos_installer_image
+        }
         sysctls = {
           "net.ipv6.conf.all.disable_ipv6"     = "1"
           "net.ipv6.conf.default.disable_ipv6" = "1"
