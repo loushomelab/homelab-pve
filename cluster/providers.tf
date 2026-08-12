@@ -47,3 +47,10 @@ provider "doppler" {
   # Doppler Token should be provided via HCP Terraform Environment Variable: DOPPLER_TOKEN
 }
 
+# 全局 Doppler 数据源，避免多文件并发重复请求 Doppler API
+data "doppler_secrets" "this" {
+  config  = "prd"
+  project = "k8s"
+}
+
+

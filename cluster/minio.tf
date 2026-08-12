@@ -1,20 +1,12 @@
 # ==============================================================================
-# 🔐 Secrets via Doppler for MinIO
-# ==============================================================================
-data "doppler_secrets" "minio" {
-  config  = "prd"
-  project = "k8s" # Update if your Doppler project for MinIO is different
-}
-
-# ==============================================================================
 # 🪣 MinIO Provider
 # ==============================================================================
 # IMPORTANT: Manually install MinIO App in TrueNAS SCALE first and add the
 # root credentials to Doppler.
 provider "minio" {
-  minio_server   = data.doppler_secrets.minio.map.DB_MINIO_ENDPOINT
-  minio_user     = data.doppler_secrets.minio.map.DB_MINIO_ROOT__USER
-  minio_password = data.doppler_secrets.minio.map.DB_MINIO_ROOT__PASSWORD
+  minio_server   = data.doppler_secrets.this.map.DB_MINIO_ENDPOINT
+  minio_user     = data.doppler_secrets.this.map.DB_MINIO_ROOT__USER
+  minio_password = data.doppler_secrets.this.map.DB_MINIO_ROOT__PASSWORD
   minio_ssl      = false # Set to true if TrueNAS MinIO has TLS enabled
 }
 
@@ -26,8 +18,8 @@ resource "minio_s3_bucket" "loki_data" {
 }
 
 resource "minio_iam_user" "loki_user" {
-  name          = data.doppler_secrets.minio.map.S3_LOKI_ACCESS_KEY
-  secret        = data.doppler_secrets.minio.map.S3_LOKI_SECRET_KEY
+  name          = data.doppler_secrets.this.map.S3_LOKI_ACCESS_KEY
+  secret        = data.doppler_secrets.this.map.S3_LOKI_SECRET_KEY
   force_destroy = true
 }
 
@@ -62,8 +54,8 @@ resource "minio_s3_bucket" "mimir_data" {
 }
 
 resource "minio_iam_user" "mimir_user" {
-  name          = data.doppler_secrets.minio.map.S3_MIMIR_ACCESS_KEY
-  secret        = data.doppler_secrets.minio.map.S3_MIMIR_SECRET_KEY
+  name          = data.doppler_secrets.this.map.S3_MIMIR_ACCESS_KEY
+  secret        = data.doppler_secrets.this.map.S3_MIMIR_SECRET_KEY
   force_destroy = true
 }
 
@@ -105,8 +97,8 @@ resource "minio_s3_bucket" "pyroscope_data" {
 }
 
 resource "minio_iam_user" "tempo_user" {
-  name          = data.doppler_secrets.minio.map.S3_TEMPO_ACCESS_KEY
-  secret        = data.doppler_secrets.minio.map.S3_TEMPO_SECRET_KEY
+  name          = data.doppler_secrets.this.map.S3_TEMPO_ACCESS_KEY
+  secret        = data.doppler_secrets.this.map.S3_TEMPO_SECRET_KEY
   force_destroy = true
 }
 
@@ -133,8 +125,8 @@ resource "minio_iam_user_policy_attachment" "tempo_attachment" {
 }
 
 resource "minio_iam_user" "pyroscope_user" {
-  name          = data.doppler_secrets.minio.map.S3_PYROSCOPE_ACCESS_KEY
-  secret        = data.doppler_secrets.minio.map.S3_PYROSCOPE_SECRET_KEY
+  name          = data.doppler_secrets.this.map.S3_PYROSCOPE_ACCESS_KEY
+  secret        = data.doppler_secrets.this.map.S3_PYROSCOPE_SECRET_KEY
   force_destroy = true
 }
 
@@ -168,8 +160,8 @@ resource "minio_s3_bucket" "umami_data" {
 }
 
 resource "minio_iam_user" "umami_user" {
-  name          = data.doppler_secrets.minio.map.S3_UMAMI_ACCESS_KEY
-  secret        = data.doppler_secrets.minio.map.S3_UMAMI_SECRET_KEY
+  name          = data.doppler_secrets.this.map.S3_UMAMI_ACCESS_KEY
+  secret        = data.doppler_secrets.this.map.S3_UMAMI_SECRET_KEY
   force_destroy = true
 }
 
