@@ -52,5 +52,3 @@ data "doppler_secrets" "this" {
   config  = "prd"
   project = "k8s"
 }
-
-

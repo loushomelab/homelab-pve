@@ -1,3 +1,4 @@
+# tflint-ignore: terraform_unused_declarations
 variable "HOMELAB_CICD_SSH_PRIVATE_KEY" {
   type        = string
   description = "SSH private key for CICD and provisioning"
@@ -5,6 +6,7 @@ variable "HOMELAB_CICD_SSH_PRIVATE_KEY" {
   default     = ""
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "HOMELAB_CICD_SSH_PUBLIC_KEY" {
   type        = string
   description = "SSH public key for CICD and provisioning"

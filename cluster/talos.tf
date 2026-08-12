@@ -71,6 +71,7 @@ moved {
 resource "talos_machine_secrets" "this" {}
 
 # 5. Control Plane Machine Configuration with Zot Mirror Patches
+# tflint-ignore: terraform_unused_declarations
 data "talos_machine_configuration" "controlplane" {
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
@@ -113,6 +114,7 @@ data "talos_machine_configuration" "controlplane" {
 }
 
 # 6. Worker Machine Configuration with Zot Mirror Patches
+# tflint-ignore: terraform_unused_declarations
 data "talos_machine_configuration" "worker" {
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
@@ -173,5 +175,3 @@ resource "talos_machine_bootstrap" "this" {
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
 }
-
-

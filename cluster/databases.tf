@@ -1,7 +1,7 @@
 # ==============================================================================
 # 🐘 PostgreSQL Roles & Databases
 # ==============================================================================
-# NOTE: The LXC containers (151 and 152) are pre-created manually via Proxmox 
+# NOTE: The LXC containers (151 and 152) are pre-created manually via Proxmox
 # Turnkey scripts (or similar). Terraform is only taking over the DB logical resources.
 
 # --- Auth DB Provider (192.168.50.151) ---
