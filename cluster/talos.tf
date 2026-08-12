@@ -71,7 +71,6 @@ moved {
 resource "talos_machine_secrets" "this" {}
 
 # 5. Control Plane Machine Configuration with Zot Mirror Patches
-# tflint-ignore: terraform_unused_declarations
 data "talos_machine_configuration" "controlplane" {
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
@@ -114,7 +113,6 @@ data "talos_machine_configuration" "controlplane" {
 }
 
 # 6. Worker Machine Configuration with Zot Mirror Patches
-# tflint-ignore: terraform_unused_declarations
 data "talos_machine_configuration" "worker" {
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
@@ -156,22 +154,39 @@ data "talos_machine_configuration" "worker" {
   ]
 }
 
-# 7. Talos Client Configuration (talosconfig)
+# 7. 应用 Machine Configuration 到 Control Plane 节点
+resource "talos_machine_configuration_apply" "controlplane" {
+  for_each                    = module.talos_cp
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
+  node                        = try(each.value.ipv4_addresses[1][0], "")
+}
+
+# 8. 应用 Machine Configuration 到 Worker 节点
+resource "talos_machine_configuration_apply" "worker" {
+  for_each                    = module.talos_worker
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
+  node                        = try(each.value.ipv4_addresses[1][0], "")
+}
+
+# 9. 自动 Bootstrap 首个 Control Plane 节点
+resource "talos_machine_bootstrap" "this" {
+  depends_on           = [talos_machine_configuration_apply.controlplane]
+  client_configuration = talos_machine_secrets.this.client_configuration
+  node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
+}
+
+# 10. 生成 Talos 客户端配置 (talosconfig)
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
   endpoints            = [for name, node in module.talos_cp : try(node.ipv4_addresses[1][0], "")]
 }
 
-# 8. Kubernetes Kubeconfig
+# 11. 自动生成 Kubernetes Kubeconfig
 resource "talos_cluster_kubeconfig" "this" {
   depends_on           = [talos_machine_bootstrap.this]
-  client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
-}
-
-# 9. Talos Bootstrap Resource
-resource "talos_machine_bootstrap" "this" {
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
 }
