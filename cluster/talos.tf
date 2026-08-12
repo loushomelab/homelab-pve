@@ -163,7 +163,15 @@ data "talos_client_configuration" "this" {
 
 # 8. Kubernetes Kubeconfig
 resource "talos_cluster_kubeconfig" "this" {
+  depends_on           = [talos_machine_bootstrap.this]
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
 }
+
+# 9. Talos Bootstrap Resource
+resource "talos_machine_bootstrap" "this" {
+  client_configuration = talos_machine_secrets.this.client_configuration
+  node                 = try(module.talos_cp["cp-01"].ipv4_addresses[1][0], "192.168.50.110")
+}
+
 
