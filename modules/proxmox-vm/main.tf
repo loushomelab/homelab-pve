@@ -22,15 +22,15 @@ resource "proxmox_virtual_environment_vm" "this" {
   # 显式确保创建后处于开机状态
   started = true
 
-  # 严谨的 QEMU Agent 响应与 IP 轮询等待配置
+  # QEMU Agent 响应配置 (禁用 wait_for_ip 以避免初次部署/升级时的依赖死锁)
   agent {
     enabled = true
     timeout = "15m"
     trim    = true
 
     wait_for_ip {
-      disabled = false
-      ipv4     = true
+      disabled = true
+      ipv4     = false
     }
   }
 
