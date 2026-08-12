@@ -1,5 +1,5 @@
 locals {
-  talos_version = "v1.13.8"
+  talos_version = "v1.13.7"
   # Talos Image Factory schematic ID: ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515 (includes siderolabs/qemu-guest-agent)
   talos_iso_url = "https://factory.talos.dev/image/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515/${local.talos_version}/nocloud-amd64.iso"
 
