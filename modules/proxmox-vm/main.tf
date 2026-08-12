@@ -19,8 +19,19 @@ resource "proxmox_virtual_environment_vm" "this" {
     ]
   }
 
+  # 显式确保创建后处于开机状态
+  started = true
+
+  # 严谨的 QEMU Agent 响应与 IP 轮询等待配置
   agent {
     enabled = true
+    timeout = "15m"
+    trim    = true
+
+    wait_for_ip {
+      disabled = false
+      ipv4     = true
+    }
   }
 
   boot_order = ["scsi0", "ide2"]

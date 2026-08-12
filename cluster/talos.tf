@@ -79,6 +79,10 @@ data "talos_machine_configuration" "controlplane" {
   config_patches = [
     yamlencode({
       machine = {
+        sysctls = {
+          "net.ipv6.conf.all.disable_ipv6"     = "1"
+          "net.ipv6.conf.default.disable_ipv6" = "1"
+        }
         registries = {
           # 1. 映射常见 Registry 域名到 Zot
           mirrors = {
@@ -121,6 +125,10 @@ data "talos_machine_configuration" "worker" {
   config_patches = [
     yamlencode({
       machine = {
+        sysctls = {
+          "net.ipv6.conf.all.disable_ipv6"     = "1"
+          "net.ipv6.conf.default.disable_ipv6" = "1"
+        }
         registries = {
           # 1. 映射常见 Registry 域名到 Zot
           mirrors = {
