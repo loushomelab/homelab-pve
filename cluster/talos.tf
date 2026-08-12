@@ -66,3 +66,90 @@ moved {
   from = proxmox_virtual_environment_vm.talos_cp_01
   to   = module.talos_cp["cp-01"].proxmox_virtual_environment_vm.this
 }
+
+# 4. Talos Machine Secrets
+resource "talos_machine_secrets" "this" {}
+
+# 5. Control Plane Machine Configuration with Zot Mirror Patches
+data "talos_machine_configuration" "controlplane" {
+  cluster_name     = var.cluster_name
+  cluster_endpoint = var.cluster_endpoint
+  machine_type     = "controlplane"
+  machine_secrets  = talos_machine_secrets.this.machine_secrets
+  config_patches = [
+    yamlencode({
+      machine = {
+        registries = {
+          # 1. 映射常见 Registry 域名到 Zot
+          mirrors = {
+            "docker.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/docker.io"]
+            }
+            "ghcr.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/ghcr.io"]
+            }
+            "registry.k8s.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/registry.k8s.io"]
+            }
+            "quay.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/quay.io"]
+            }
+            "gcr.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
+            }
+          }
+          # 2. 允许 HTTP (非 HTTPS) 内部连接
+          config = {
+            "192.168.50.125:8080" = {
+              tls = {
+                insecure = true
+              }
+            }
+          }
+        }
+      }
+    })
+  ]
+}
+
+# 6. Worker Machine Configuration with Zot Mirror Patches
+data "talos_machine_configuration" "worker" {
+  cluster_name     = var.cluster_name
+  cluster_endpoint = var.cluster_endpoint
+  machine_type     = "worker"
+  machine_secrets  = talos_machine_secrets.this.machine_secrets
+  config_patches = [
+    yamlencode({
+      machine = {
+        registries = {
+          # 1. 映射常见 Registry 域名到 Zot
+          mirrors = {
+            "docker.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/docker.io"]
+            }
+            "ghcr.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/ghcr.io"]
+            }
+            "registry.k8s.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/registry.k8s.io"]
+            }
+            "quay.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/quay.io"]
+            }
+            "gcr.io" = {
+              endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
+            }
+          }
+          # 2. 允许 HTTP (非 HTTPS) 内部连接
+          config = {
+            "192.168.50.125:8080" = {
+              tls = {
+                insecure = true
+              }
+            }
+          }
+        }
+      }
+    })
+  ]
+}
