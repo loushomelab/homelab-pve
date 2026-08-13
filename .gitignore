@@ -26,3 +26,4 @@ terraform.rc
 
 # Ignore terraform lock files in modules (only root environments should track them)
 modules/**/.terraform.lock.hcl
+.DS_Store

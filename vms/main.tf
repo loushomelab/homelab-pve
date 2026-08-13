@@ -23,9 +23,9 @@ module "talos_cp" {
   source = "../modules/proxmox-vm"
 
   for_each = {
-    "cp-01" = { node = "r720", id = 801, mac = "BC:24:11:00:00:01" }
-    "cp-02" = { node = "1920x", id = 802, mac = "BC:24:11:00:00:02" }
-    "cp-03" = { node = "3960x", id = 803, mac = "BC:24:11:00:00:03" }
+    "cp-01" = { node = "r720", id = 110, mac = "BC:24:11:00:00:01" }
+    "cp-02" = { node = "1920x", id = 112, mac = "BC:24:11:00:00:02" }
+    "cp-03" = { node = "3960x", id = 114, mac = "BC:24:11:00:00:03" }
   }
 
   name        = "talos-${each.key}"
@@ -42,9 +42,9 @@ module "talos_worker" {
   source = "../modules/proxmox-vm"
 
   for_each = {
-    "worker-01" = { node = "r720", id = 811, mac = "BC:24:11:00:01:01" }
-    "worker-02" = { node = "1920x", id = 812, mac = "BC:24:11:00:01:02" }
-    "worker-03" = { node = "3960x", id = 813, mac = "BC:24:11:00:01:03" }
+    "worker-01" = { node = "r720", id = 111, mac = "BC:24:11:00:01:01" }
+    "worker-02" = { node = "1920x", id = 113, mac = "BC:24:11:00:01:02" }
+    "worker-03" = { node = "3960x", id = 115, mac = "BC:24:11:00:01:03" }
   }
 
   name        = "talos-${each.key}"
