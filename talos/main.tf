@@ -37,6 +37,9 @@ data "talos_machine_configuration" "controlplane" {
         }
         registries = {
           mirrors = {
+            "factory.talos.dev" = {
+              endpoints = ["http://192.168.50.125:8080"]
+            }
             "docker.io" = {
               endpoints = ["http://192.168.50.125:8080"]
             }
@@ -77,6 +80,9 @@ data "talos_machine_configuration" "worker" {
         }
         registries = {
           mirrors = {
+            "factory.talos.dev" = {
+              endpoints = ["http://192.168.50.125:8080"]
+            }
             "docker.io" = {
               endpoints = ["http://192.168.50.125:8080"]
             }
