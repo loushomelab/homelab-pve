@@ -38,22 +38,28 @@ data "talos_machine_configuration" "controlplane" {
         registries = {
           mirrors = {
             "factory.talos.dev" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "docker.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "ghcr.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "registry.k8s.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "quay.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "gcr.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
           }
         }
@@ -81,22 +87,28 @@ data "talos_machine_configuration" "worker" {
         registries = {
           mirrors = {
             "factory.talos.dev" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "docker.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "ghcr.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "registry.k8s.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "quay.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
             "gcr.io" = {
-              endpoints = ["http://192.168.50.125:8080"]
+              endpoints    = ["http://192.168.50.125:8080"]
+              overridePath = true
             }
           }
         }
