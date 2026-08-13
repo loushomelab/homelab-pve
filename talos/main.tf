@@ -1,7 +1,7 @@
 locals {
   talos_version         = "v1.13.7"
   schematic_id          = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
-  talos_installer_image = "factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
+  talos_installer_image = "192.168.50.125:8080/factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
 
   controlplane_nodes = {
     "cp-01" = "192.168.50.110"
