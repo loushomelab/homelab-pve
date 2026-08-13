@@ -53,13 +53,6 @@ data "talos_machine_configuration" "controlplane" {
               endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
             }
           }
-          config = {
-            "192.168.50.125:8080" = {
-              tls = {
-                insecureSkipVerify = true
-              }
-            }
-          }
         }
       }
     })
@@ -98,13 +91,6 @@ data "talos_machine_configuration" "worker" {
             }
             "gcr.io" = {
               endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
-            }
-          }
-          config = {
-            "192.168.50.125:8080" = {
-              tls = {
-                insecureSkipVerify = true
-              }
             }
           }
         }
