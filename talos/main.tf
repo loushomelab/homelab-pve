@@ -38,19 +38,19 @@ data "talos_machine_configuration" "controlplane" {
         registries = {
           mirrors = {
             "docker.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/docker.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "ghcr.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/ghcr.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "registry.k8s.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/registry.k8s.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "quay.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/quay.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "gcr.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
           }
         }
@@ -78,19 +78,19 @@ data "talos_machine_configuration" "worker" {
         registries = {
           mirrors = {
             "docker.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/docker.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "ghcr.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/ghcr.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "registry.k8s.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/registry.k8s.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "quay.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/quay.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
             "gcr.io" = {
-              endpoints = ["http://192.168.50.125:8080/v2/gcr.io"]
+              endpoints = ["http://192.168.50.125:8080"]
             }
           }
         }
