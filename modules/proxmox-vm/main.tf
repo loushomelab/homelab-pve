@@ -16,6 +16,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   lifecycle {
     ignore_changes = [
       node_name,
+      agent,
     ]
   }
 
