@@ -237,6 +237,7 @@ data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
   endpoints            = values(local.controlplane_nodes)
+  nodes                = [local.controlplane_nodes["cp-03"]]
 }
 
 # 8. 自动生成 Kubernetes Kubeconfig
