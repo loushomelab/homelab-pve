@@ -16,16 +16,18 @@ resource "proxmox_virtual_environment_vm" "this" {
   lifecycle {
     ignore_changes = [
       node_name,
-      agent,
     ]
   }
 
   # 显式确保创建后处于开机状态
   started = true
 
-  # 禁用 QEMU Agent 探测，避免 Day 0 未启动 Agent 时 Proxmox Provider 在 Refresh/Plan 阶段轮询超时
+  # 开启 QEMU Agent 硬件，但禁用 IP 等待避免装机时死锁超时
   agent {
-    enabled = false
+    enabled = true
+    wait_for_ip {
+      disabled = true
+    }
   }
 
   boot_order = ["scsi0", "ide2"]
