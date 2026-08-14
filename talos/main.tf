@@ -1,7 +1,7 @@
 locals {
   talos_version         = "v1.13.7"
   schematic_id          = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
-  talos_installer_image = "192.168.50.125:8080/factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
+  talos_installer_image = "factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
 
   controlplane_nodes = {
     "cp-01" = "192.168.50.110"
@@ -153,7 +153,7 @@ resource "talos_machine_configuration_apply" "worker" {
 resource "talos_machine_bootstrap" "this" {
   depends_on           = [talos_machine_configuration_apply.controlplane]
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.controlplane_nodes["cp-01"]
+  node                 = local.controlplane_nodes["cp-03"]
 }
 
 # 7. 生成 Talos 客户端配置 (talosconfig)
@@ -167,5 +167,5 @@ data "talos_client_configuration" "this" {
 resource "talos_cluster_kubeconfig" "this" {
   depends_on           = [talos_machine_bootstrap.this]
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.controlplane_nodes["cp-01"]
+  node                 = local.controlplane_nodes["cp-03"]
 }
