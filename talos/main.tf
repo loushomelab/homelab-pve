@@ -123,6 +123,15 @@ resource "talos_machine_configuration_apply" "controlplane" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
   node                        = each.value
+  config_patches = [
+    yamlencode({
+      machine = {
+        network = {
+          hostname = each.key
+        }
+      }
+    })
+  ]
 }
 
 # 5. 应用 Machine Configuration 到 Worker 节点
@@ -131,6 +140,15 @@ resource "talos_machine_configuration_apply" "worker" {
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
   node                        = each.value
+  config_patches = [
+    yamlencode({
+      machine = {
+        network = {
+          hostname = each.key
+        }
+      }
+    })
+  ]
 }
 
 # 6. 自动 Bootstrap 首个 Control Plane 节点
