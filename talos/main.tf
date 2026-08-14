@@ -125,11 +125,10 @@ resource "talos_machine_configuration_apply" "controlplane" {
   node                        = each.value
   config_patches = [
     yamlencode({
-      machine = {
-        network = {
-          hostname = each.key
-        }
-      }
+      apiVersion = "v1alpha1"
+      kind       = "HostnameConfig"
+      hostname   = each.key
+      auto       = "off"
     })
   ]
 }
@@ -142,11 +141,10 @@ resource "talos_machine_configuration_apply" "worker" {
   node                        = each.value
   config_patches = [
     yamlencode({
-      machine = {
-        network = {
-          hostname = each.key
-        }
-      }
+      apiVersion = "v1alpha1"
+      kind       = "HostnameConfig"
+      hostname   = each.key
+      auto       = "off"
     })
   ]
 }
