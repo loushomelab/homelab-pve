@@ -25,6 +25,12 @@ variable "memory" {
   default     = 4096
 }
 
+variable "disk_size" {
+  description = "The disk size in GB"
+  type        = number
+  default     = 40
+}
+
 variable "datastore_id" {
   description = "The Proxmox datastore ID for disks"
   type        = string

@@ -53,6 +53,7 @@ module "talos_worker" {
   vm_id        = each.value.id
   mac_address  = each.value.mac
   datastore_id = "SSD"
+  disk_size    = 100
   cores        = 8
   memory       = 16384
   iso_file_id  = proxmox_download_file.talos_iso[each.value.node].id
