@@ -28,7 +28,7 @@ variable "memory" {
 variable "datastore_id" {
   description = "The Proxmox datastore ID for disks"
   type        = string
-  default     = "Ceph-pool"
+  default     = "SSD"
 }
 
 variable "iso_file_id" {
