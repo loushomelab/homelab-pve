@@ -28,13 +28,14 @@ module "talos_cp" {
     "cp-03" = { node = "3960x", id = 114, mac = "BC:24:11:00:00:03" }
   }
 
-  name        = "talos-${each.key}"
-  node_name   = each.value.node
-  vm_id       = each.value.id
-  mac_address = each.value.mac
-  cores       = 4
-  memory      = 4096
-  iso_file_id = proxmox_download_file.talos_iso[each.value.node].id
+  name         = "talos-${each.key}"
+  node_name    = each.value.node
+  vm_id        = each.value.id
+  mac_address  = each.value.mac
+  datastore_id = "SSD"
+  cores        = 4
+  memory       = 4096
+  iso_file_id  = proxmox_download_file.talos_iso[each.value.node].id
 }
 
 # 3. 部署 Worker 节点 (3台)
@@ -47,11 +48,12 @@ module "talos_worker" {
     "worker-03" = { node = "3960x", id = 115, mac = "BC:24:11:00:01:03" }
   }
 
-  name        = "talos-${each.key}"
-  node_name   = each.value.node
-  vm_id       = each.value.id
-  mac_address = each.value.mac
-  cores       = 8
-  memory      = 16384
-  iso_file_id = proxmox_download_file.talos_iso[each.value.node].id
+  name         = "talos-${each.key}"
+  node_name    = each.value.node
+  vm_id        = each.value.id
+  mac_address  = each.value.mac
+  datastore_id = "SSD"
+  cores        = 8
+  memory       = 16384
+  iso_file_id  = proxmox_download_file.talos_iso[each.value.node].id
 }
