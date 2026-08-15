@@ -6,6 +6,15 @@ output "talosconfig" {
 
 output "kubeconfig" {
   description = "Kubernetes client configuration (kubeconfig)"
-  value       = resource.talos_cluster_kubeconfig.this.kubeconfig_raw
-  sensitive   = true
+  value = yamlencode(merge(
+    yamldecode(resource.talos_cluster_kubeconfig.this.kubeconfig_raw),
+    {
+      contexts = [
+        for ctx in yamldecode(resource.talos_cluster_kubeconfig.this.kubeconfig_raw).contexts : merge(ctx, {
+          context = merge(ctx.context, { namespace = "argocd" })
+        })
+      ]
+    }
+  ))
+  sensitive = true
 }
