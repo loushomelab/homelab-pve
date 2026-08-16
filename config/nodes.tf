@@ -21,7 +21,8 @@ resource "proxmox_acme_certificate" "pve_node_cert" {
   for_each  = local.pve_nodes
   node_name = each.value
 
-  account = proxmox_acme_account.homelab.name
+  # 直接指定 PVE 中已手动创建好的 ACME 账号名称
+  account = "homelab"
 
   domains = [
     {
