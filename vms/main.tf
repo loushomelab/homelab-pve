@@ -23,15 +23,16 @@ module "talos_cp" {
   source = "../modules/proxmox-vm"
 
   for_each = {
-    "cp-01" = { node = "r720", id = 110, mac = "BC:24:11:00:00:01" }
-    "cp-02" = { node = "1920x", id = 112, mac = "BC:24:11:00:00:02" }
-    "cp-03" = { node = "3960x", id = 114, mac = "BC:24:11:00:00:03" }
+    "cp-01" = { node = "r720", id = 110, mac = "BC:24:11:00:00:01", ip = "192.168.50.110" }
+    "cp-02" = { node = "1920x", id = 112, mac = "BC:24:11:00:00:02", ip = "192.168.50.112" }
+    "cp-03" = { node = "3960x", id = 114, mac = "BC:24:11:00:00:03", ip = "192.168.50.114" }
   }
 
   name         = "talos-${each.key}"
   node_name    = each.value.node
   vm_id        = each.value.id
   mac_address  = each.value.mac
+  ip_address   = each.value.ip
   datastore_id = "SSD"
   cores        = 4
   memory       = 4096
@@ -43,15 +44,16 @@ module "talos_worker" {
   source = "../modules/proxmox-vm"
 
   for_each = {
-    "worker-01" = { node = "r720", id = 111, mac = "BC:24:11:00:01:01" }
-    "worker-02" = { node = "1920x", id = 113, mac = "BC:24:11:00:01:02" }
-    "worker-03" = { node = "3960x", id = 115, mac = "BC:24:11:00:01:03" }
+    "worker-01" = { node = "r720", id = 111, mac = "BC:24:11:00:01:01", ip = "192.168.50.111" }
+    "worker-02" = { node = "1920x", id = 113, mac = "BC:24:11:00:01:02", ip = "192.168.50.113" }
+    "worker-03" = { node = "3960x", id = 115, mac = "BC:24:11:00:01:03", ip = "192.168.50.115" }
   }
 
   name         = "talos-${each.key}"
   node_name    = each.value.node
   vm_id        = each.value.id
   mac_address  = each.value.mac
+  ip_address   = each.value.ip
   datastore_id = "SSD"
   disk_size    = 100
   cores        = 8

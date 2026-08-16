@@ -46,3 +46,8 @@ variable "mac_address" {
   description = "The static MAC address for the primary network interface"
   type        = string
 }
+
+variable "ip_address" {
+  description = "The static IP address"
+  type        = string
+}

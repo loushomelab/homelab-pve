@@ -59,6 +59,16 @@ resource "proxmox_virtual_environment_vm" "this" {
     interface = "ide2"
   }
 
+  initialization {
+    ip_config {
+      ipv4 {
+        address = "${var.ip_address}/24"
+        gateway = "192.168.50.1"
+      }
+    }
+  }
+
+
   network_device {
     bridge      = "vmbr0"
     mac_address = var.mac_address
