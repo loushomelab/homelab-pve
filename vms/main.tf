@@ -1,6 +1,6 @@
 locals {
   talos_version = "v1.13.7"
-  schematic_id  = "ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515"
+  schematic_id  = "6ebbfe35c8225645c05d4d19eaad385bd1ec795954932d0ada671388272fec19"
   talos_iso_url = "https://factory.talos.dev/image/${local.schematic_id}/${local.talos_version}/nocloud-amd64.iso"
 
   target_nodes = ["r720", "1920x", "3960x"]
