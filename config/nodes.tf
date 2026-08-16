@@ -8,12 +8,13 @@ locals {
   ])
 }
 
-# 1. 批量配置 4 个 PVE 节点的系统 DNS Search Domain
+# 1. 批量配置 4 个 PVE 节点的系统 DNS Search Domain 及 DNS 服务器
 resource "proxmox_virtual_environment_dns" "node_dns" {
   for_each  = local.pve_nodes
   node_name = each.value
 
-  domain = local.pve_domain_suffix
+  domain  = local.pve_domain_suffix
+  servers = ["198.18.0.2"]
 }
 
 # 2. 批量配置 4 个 PVE 节点的原生 ACME TLS 证书
@@ -21,8 +22,8 @@ resource "proxmox_acme_certificate" "pve_node_cert" {
   for_each  = local.pve_nodes
   node_name = each.value
 
-  # 直接指定 PVE 中已手动创建好的 ACME 账号名称
   account = "homelab"
+  force   = true
 
   domains = [
     {
