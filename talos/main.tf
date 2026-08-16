@@ -1,5 +1,5 @@
 locals {
-  talos_version         = "v1.13.7"
+  talos_version         = "v1.13.8"
   schematic_id          = "6ebbfe35c8225645c05d4d19eaad385bd1ec795954932d0ada671388272fec19"
   talos_installer_image = "factory.talos.dev/installer/${local.schematic_id}:${local.talos_version}"
 
