@@ -26,13 +26,16 @@ data "talos_machine_configuration" "controlplane" {
   machine_type     = "controlplane"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   config_patches = [
+
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "TimeSyncConfig"
+      ntp = {
+        servers = ["ntp.aliyun.com", "time.pool.aliyun.com", "time.windows.com"]
+      }
+    }),
     yamlencode({
       machine = {
-
-        time = {
-          disabled = false
-          servers  = ["ntp.aliyun.com", "time.pool.aliyun.com", "time.windows.com"]
-        }
         install = {
           image = local.talos_installer_image
         }
@@ -118,13 +121,16 @@ data "talos_machine_configuration" "worker" {
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   config_patches = [
+
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "TimeSyncConfig"
+      ntp = {
+        servers = ["ntp.aliyun.com", "time.pool.aliyun.com", "time.windows.com"]
+      }
+    }),
     yamlencode({
       machine = {
-
-        time = {
-          disabled = false
-          servers  = ["ntp.aliyun.com", "time.pool.aliyun.com", "time.windows.com"]
-        }
         install = {
           image = local.talos_installer_image
         }
