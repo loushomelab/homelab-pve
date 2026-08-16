@@ -28,6 +28,11 @@ data "talos_machine_configuration" "controlplane" {
   config_patches = [
     yamlencode({
       machine = {
+
+        time = {
+          disabled = false
+          servers  = ["ntp.aliyun.com", "time.pool.aliyun.com", "time.windows.com"]
+        }
         install = {
           image = local.talos_installer_image
         }
@@ -115,6 +120,11 @@ data "talos_machine_configuration" "worker" {
   config_patches = [
     yamlencode({
       machine = {
+
+        time = {
+          disabled = false
+          servers  = ["ntp.aliyun.com", "time.pool.aliyun.com", "time.windows.com"]
+        }
         install = {
           image = local.talos_installer_image
         }
