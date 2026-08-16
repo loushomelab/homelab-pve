@@ -205,6 +205,26 @@ resource "talos_machine_configuration_apply" "controlplane" {
       kind       = "HostnameConfig"
       hostname   = each.key
       auto       = "off"
+    }),
+    yamlencode({
+      machine = {
+        network = {
+          interfaces = [
+            {
+              interface = "ens18"
+              dhcp      = false
+              addresses = ["${each.value}/24"]
+              routes = [
+                {
+                  network = "0.0.0.0/0"
+                  gateway = "192.168.50.1"
+                }
+              ]
+            }
+          ]
+          nameservers = ["192.168.50.1", "1.1.1.1"]
+        }
+      }
     })
   ]
 }
@@ -221,6 +241,26 @@ resource "talos_machine_configuration_apply" "worker" {
       kind       = "HostnameConfig"
       hostname   = each.key
       auto       = "off"
+    }),
+    yamlencode({
+      machine = {
+        network = {
+          interfaces = [
+            {
+              interface = "ens18"
+              dhcp      = false
+              addresses = ["${each.value}/24"]
+              routes = [
+                {
+                  network = "0.0.0.0/0"
+                  gateway = "192.168.50.1"
+                }
+              ]
+            }
+          ]
+          nameservers = ["192.168.50.1", "1.1.1.1"]
+        }
+      }
     })
   ]
 }
