@@ -28,6 +28,21 @@ data "talos_machine_configuration" "controlplane" {
   config_patches = [
 
     yamlencode({
+      cluster = {
+        apiServer = {
+          certSANs = [
+            "646499453.xyz",
+            "192.168.50.110"
+          ]
+        }
+      }
+      machine = {
+        certSANs = [
+          "646499453.xyz"
+        ]
+      }
+    }),
+    yamlencode({
       apiVersion = "v1alpha1"
       kind       = "TimeSyncConfig"
       ntp = {
@@ -122,6 +137,13 @@ data "talos_machine_configuration" "worker" {
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   config_patches = [
 
+    yamlencode({
+      machine = {
+        certSANs = [
+          "646499453.xyz"
+        ]
+      }
+    }),
     yamlencode({
       apiVersion = "v1alpha1"
       kind       = "TimeSyncConfig"
@@ -292,7 +314,7 @@ resource "talos_machine_bootstrap" "this" {
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
-  endpoints            = values(local.controlplane_nodes)
+  endpoints            = concat(["646499453.xyz"], values(local.controlplane_nodes))
   nodes                = [local.controlplane_nodes["cp-03"]]
 }
 
