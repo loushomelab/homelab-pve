@@ -21,7 +21,7 @@ resource "proxmox_realm_openid" "authentik" {
 
 # 2. 持久化声明 Authentik 管理员组
 resource "proxmox_virtual_environment_group" "authentik_admins" {
-  group_id = "authentik Admins"
+  group_id = "authentik-admins"
   comment  = "Authentik Administrators - Managed by Terraform"
 }
 
