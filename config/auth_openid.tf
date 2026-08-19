@@ -14,7 +14,6 @@ resource "proxmox_realm_openid" "authentik" {
   groups_claim      = "groups"
   groups_autocreate = true
   groups_overwrite  = true
-  prompt            = "none"
   query_userinfo    = true
   comment           = "Authentik SSO Managed by Terraform"
 }
