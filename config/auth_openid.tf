@@ -13,15 +13,16 @@ resource "proxmox_realm_openid" "authentik" {
   scopes            = "openid email profile groups"
   groups_claim      = "groups"
   groups_autocreate = true
-  groups_overwrite  = false
+  groups_overwrite  = true
   prompt            = "none"
   query_userinfo    = true
   comment           = "Authentik SSO Managed by Terraform"
 }
 
 # 2. 持久化声明 Authentik 管理员组
+# 注意：Proxmox VE 在同步 OIDC 组时会自动追加 "-<realm>" 后缀（即 -authentik）
 resource "proxmox_virtual_environment_group" "authentik_admins" {
-  group_id = "authentik-admins"
+  group_id = "authentik-admins-authentik"
   comment  = "Authentik Administrators - Managed by Terraform"
 }
 
