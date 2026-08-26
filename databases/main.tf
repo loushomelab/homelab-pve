@@ -28,6 +28,19 @@ resource "postgresql_database" "authentik" {
   owner    = postgresql_role.authentik.name
 }
 
+resource "postgresql_role" "forgejo" {
+  provider = postgresql.auth
+  name     = data.doppler_secrets.this.map.FORGEJO_POSTGRESQL__USER
+  login    = true
+  password = data.doppler_secrets.this.map.FORGEJO_POSTGRESQL__PASSWORD
+}
+
+resource "postgresql_database" "forgejo" {
+  provider = postgresql.auth
+  name     = data.doppler_secrets.this.map.FORGEJO_POSTGRESQL__NAME
+  owner    = postgresql_role.forgejo.name
+}
+
 # --- Obs DB Provider (192.168.50.152) ---
 provider "postgresql" {
   alias    = "obs"

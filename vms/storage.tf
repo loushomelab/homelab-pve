@@ -1,11 +1,10 @@
 # 挂载 Proxmox Backup Server (PBS) 存储
 resource "proxmox_storage_pbs" "pbs_lxc" {
-  id          = "pbs-lxc"
-  server      = data.doppler_secrets.this.map.PBS_HOST
-  datastore   = data.doppler_secrets.this.map.PBS_DATASTORE
-  username    = data.doppler_secrets.this.map.PBS_TF_SA_ID
-  password    = data.doppler_secrets.this.map.PBS_TF_SA_TOKEN
-  fingerprint = data.doppler_secrets.this.map.PBS_FINGERPRINT
+  id        = "pbs-lxc"
+  server    = data.doppler_secrets.this.map.PBS_HOST
+  datastore = data.doppler_secrets.this.map.PBS_DATASTORE
+  username  = data.doppler_secrets.this.map.PBS_TF_SA_ID
+  password  = data.doppler_secrets.this.map.PBS_TF_SA_TOKEN
 
   content = ["backup"]
 }
