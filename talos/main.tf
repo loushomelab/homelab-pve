@@ -125,6 +125,17 @@ data "talos_machine_configuration" "controlplane" {
           overridePath = true
         }
       ]
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "RegistryMirrorConfig"
+      name       = "code.forgejo.org"
+      endpoints = [
+        {
+          url          = "http://192.168.50.125:8080/v2/code.forgejo.org"
+          overridePath = true
+        }
+      ]
     })
   ]
 }
@@ -224,6 +235,17 @@ data "talos_machine_configuration" "worker" {
       endpoints = [
         {
           url          = "http://192.168.50.125:8080/v2/gcr.io"
+          overridePath = true
+        }
+      ]
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "RegistryMirrorConfig"
+      name       = "code.forgejo.org"
+      endpoints = [
+        {
+          url          = "http://192.168.50.125:8080/v2/code.forgejo.org"
           overridePath = true
         }
       ]
