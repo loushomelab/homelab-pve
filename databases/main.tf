@@ -41,19 +41,6 @@ resource "postgresql_database" "forgejo" {
   owner    = postgresql_role.forgejo.name
 }
 
-resource "postgresql_role" "n8n" {
-  provider = postgresql.auth
-  name     = data.doppler_secrets.this.map.N8N_POSTGRESQL__USER
-  login    = true
-  password = data.doppler_secrets.this.map.N8N_POSTGRESQL__PASSWORD
-}
-
-resource "postgresql_database" "n8n" {
-  provider = postgresql.auth
-  name     = data.doppler_secrets.this.map.N8N_POSTGRESQL__NAME
-  owner    = postgresql_role.n8n.name
-}
-
 # --- Obs DB Provider (192.168.50.152) ---
 provider "postgresql" {
   alias    = "obs"
