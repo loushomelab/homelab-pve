@@ -6,6 +6,7 @@
 | --- | --- |
 | `config` | `homelab-pve-config` |
 | `databases` | `homelab-pve-databases` |
+| `forgejo` | `homelab-pve-forgejo` |
 | `minio` | `homelab-pve-minio` |
 | `talos` | `homelab-pve-talos` |
 | `vms` | `homelab-pve-vms` |
