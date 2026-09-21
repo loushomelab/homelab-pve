@@ -19,6 +19,21 @@ variable "cores" {
   default     = 4
 }
 
+variable "disk_size" {
+  description = "Size of the primary OS disk in GiB"
+  type        = number
+  default     = 40
+}
+
+variable "additional_disks" {
+  description = "Additional raw disks attached to the VM"
+  type = map(object({
+    interface = string
+    size      = number
+  }))
+  default = {}
+}
+
 variable "memory" {
   description = "Dedicated memory in MB"
   type        = number
