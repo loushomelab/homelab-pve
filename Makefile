@@ -1,7 +1,7 @@
 SHELL := /usr/bin/env bash
 
 TERRAFORM ?= terraform
-STACKS ?= config databases forgejo minio talos vms
+STACKS ?= config databases forgejo minio private talos vms
 
 .DEFAULT_GOAL := check
 

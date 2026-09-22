@@ -54,6 +54,20 @@ resource "proxmox_virtual_environment_vm" "this" {
     ssd          = true
   }
 
+  dynamic "disk" {
+    for_each = var.additional_disks
+
+    content {
+      datastore_id = var.datastore_id
+      interface    = disk.value.interface
+      size         = disk.value.size
+      file_format  = "raw"
+      discard      = "on"
+      cache        = "writethrough"
+      ssd          = true
+    }
+  }
+
   cdrom {
     file_id   = var.iso_file_id
     interface = "ide2"

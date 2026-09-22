@@ -8,6 +8,7 @@
 | `databases` | `homelab-pve-databases` |
 | `forgejo` | `homelab-pve-forgejo` |
 | `minio` | `homelab-pve-minio` |
+| `private` | `homelab-pve-private` |
 | `talos` | `homelab-pve-talos` |
 | `vms` | `homelab-pve-vms` |
 
@@ -27,7 +28,7 @@
    make check
    ```
 
-也可以通过 `STACKS` 只处理指定的 root module，例如 `make init STACKS=vms`。`make fmt` 会格式化仓库内的全部 Terraform 文件；提交前请保留各 root module 的 `.terraform.lock.hcl` 更新。
+也可以通过 `STACKS` 只处理指定的 root module，例如 `make init STACKS=private`。`make fmt` 会格式化仓库内的全部 Terraform 文件；提交前请保留各 root module 的 `.terraform.lock.hcl` 更新。
 
 ## VCS 工作流
 

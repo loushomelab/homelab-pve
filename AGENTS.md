@@ -25,6 +25,7 @@ This repository (`homelab-pve`) manages the infrastructure layer for Lou's Homel
      - `homelab-pve-databases`: PostgreSQL roles & databases.
      - `homelab-pve-vms`: Talos Control Plane & Worker VMs.
      - `homelab-pve-minio`: MinIO S3 buckets and IAM policies.
+     - `homelab-pve-private`: Private NixOS VM boundary.
 
 ---
 
@@ -37,8 +38,9 @@ homelab-pve/
 ├── minio/              # MinIO S3 Buckets & IAM User/Policy attachments
 ├── modules/
 │   └── proxmox-vm/     # Reusable module for Proxmox VM provisioning
+├── private/            # Private NixOS VM boundary
 ├── talos/              # Talos Linux bootstrap and machine configs
-├── vms/                # Talos VM instances (CP & Worker nodes across PVE nodes)
+├── vms/                # Talos VM instances across PVE nodes
 └── inventory/          # Network blueprints & environment variable definitions
 ```
 
