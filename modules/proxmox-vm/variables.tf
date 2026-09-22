@@ -40,6 +40,12 @@ variable "additional_disks" {
   default = {}
 }
 
+variable "boot_order" {
+  description = "VM boot device order"
+  type        = list(string)
+  default     = ["scsi0", "ide2"]
+}
+
 variable "datastore_id" {
   description = "The Proxmox datastore ID for disks"
   type        = string

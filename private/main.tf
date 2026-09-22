@@ -28,6 +28,7 @@ module "private" {
   datastore_id = "SSD"
   iso_file_id  = proxmox_download_file.nixos_minimal_iso.id
   mac_address  = "BC:24:11:00:02:01"
+  boot_order   = ["ide2", "scsi0"]
 
   additional_disks = {
     state = {
