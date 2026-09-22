@@ -13,6 +13,7 @@ resource "proxmox_download_file" "nixos_minimal_iso" {
   checksum           = local.nixos_iso_sha256
   checksum_algorithm = "sha256"
   overwrite          = false
+  upload_timeout     = 1800
 }
 
 module "private" {
