@@ -30,7 +30,7 @@ resource "proxmox_virtual_environment_vm" "this" {
     }
   }
 
-  boot_order = ["scsi0", "ide2"]
+  boot_order = var.boot_order
 
   cpu {
     cores = var.cores
