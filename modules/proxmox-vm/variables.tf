@@ -31,6 +31,15 @@ variable "disk_size" {
   default     = 40
 }
 
+variable "additional_disks" {
+  description = "Additional raw disks attached to the VM"
+  type = map(object({
+    interface = string
+    size      = number
+  }))
+  default = {}
+}
+
 variable "datastore_id" {
   description = "The Proxmox datastore ID for disks"
   type        = string
