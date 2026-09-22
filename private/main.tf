@@ -14,6 +14,11 @@ resource "proxmox_download_file" "nixos_minimal_iso" {
   checksum_algorithm = "sha256"
   overwrite          = false
   upload_timeout     = 1800
+
+  lifecycle {
+    # Imported PVE files omit source metadata; the versioned file name remains the replacement boundary.
+    ignore_changes = [url, checksum, checksum_algorithm]
+  }
 }
 
 module "private" {
