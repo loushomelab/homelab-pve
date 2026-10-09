@@ -25,8 +25,15 @@ resource "gitea_repository" "dotfiles" {
   has_wiki     = false
   has_projects = false
 }
-resource "gitea_repository" "testcandy" {
-  username    = "lou"
+
+resource "gitea_org" "apple_work" {
+  name        = "apple-work"
+  description = "Apple Work"
+  visibility  = "private"
+}
+
+resource "gitea_repository" "apple_work_testcandy" {
+  username    = gitea_org.apple_work.name
   name        = "testcandy"
   description = "TestCandy macOS Native App"
   private     = true
