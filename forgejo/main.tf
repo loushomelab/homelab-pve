@@ -25,3 +25,14 @@ resource "gitea_repository" "dotfiles" {
   has_wiki     = false
   has_projects = false
 }
+resource "gitea_repository" "testcandy" {
+  username    = "lou"
+  name        = "testcandy"
+  description = "TestCandy macOS Native App"
+  private     = true
+  auto_init   = false
+
+  has_issues   = false
+  has_wiki     = false
+  has_projects = false
+}
