@@ -147,6 +147,14 @@ data "talos_machine_configuration" "worker" {
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   config_patches = [
+    yamlencode({
+      machine = {
+        sysctls = {
+          # Allow CAP_SYSLOG profiling; still hide symbols from unprivileged readers.
+          "kernel.kptr_restrict" = "1"
+        }
+      }
+    }),
 
     yamlencode({
       machine = {
