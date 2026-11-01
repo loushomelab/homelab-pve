@@ -13,11 +13,17 @@ resource "proxmox_storage_pbs" "pbs_lxc" {
 # 配置 PVE 的全局备份任务
 resource "proxmox_backup_job" "pbs_daily_backup" {
   id       = "pbs-daily-backup"
-  enabled  = false
+  enabled  = true
   storage  = proxmox_storage_pbs.pbs_lxc.id
   schedule = "02:00"
   mode     = "snapshot"
-  all      = true
+
+  # Provider 0.111.1 has no guest-exclusion field. Keep PBS itself out of its
+  # own job; add new production guest IDs here when onboarding them.
+  vmid = [
+    "100", "110", "111", "112", "113", "114", "115", "120", "125",
+    "126", "151", "152", "153", "160", "180", "181", "200", "201",
+  ]
 
   mailnotification = "always"
   mailto           = [data.doppler_secrets.this.map.HOMELAB_EMAIL]
