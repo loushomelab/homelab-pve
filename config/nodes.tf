@@ -3,12 +3,11 @@ locals {
   pve_nodes = toset([
     "r720",
     "1920x",
-    "3960x",
-    "n100x8"
+    "3960x"
   ])
 }
 
-# 1. 批量配置 4 个 PVE 节点的系统 DNS Search Domain 及 DNS 服务器
+# 1. 批量配置 3 个 PVE 节点的系统 DNS Search Domain 及 DNS 服务器
 resource "proxmox_virtual_environment_dns" "node_dns" {
   for_each  = local.pve_nodes
   node_name = each.value
@@ -17,7 +16,7 @@ resource "proxmox_virtual_environment_dns" "node_dns" {
   servers = ["198.18.0.2"]
 }
 
-# 2. 批量配置 4 个 PVE 节点的原生 ACME TLS 证书
+# 2. 批量配置 3 个 PVE 节点的原生 ACME TLS 证书
 resource "proxmox_acme_certificate" "pve_node_cert" {
   for_each  = local.pve_nodes
   node_name = each.value
