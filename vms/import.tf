@@ -14,11 +14,6 @@ import {
 }
 
 import {
-  to = proxmox_storage_pbs.pbs_lxc
-  id = "pbs-lxc"
-}
-
-import {
   to = proxmox_backup_job.pbs_daily_backup
   id = "pbs-daily-backup"
 }
