@@ -30,6 +30,12 @@
 
 也可以通过 `STACKS` 只处理指定的 root module，例如 `make init STACKS=private`。`make fmt` 会格式化仓库内的全部 Terraform 文件；提交前请保留各 root module 的 `.terraform.lock.hcl` 更新。
 
+## Tailscale 子网路由
+
+`vms` 中的 Debian VM `tailscale-router`（`192.168.50.140`）仅通告 Traefik VIP `192.168.50.230/32`，并关闭子网路由 SNAT。部署后需在 UniFi 添加静态路由 `100.102.152.24/32`，下一跳为 `192.168.50.140`，以保证回程流量可达。
+
+创建 Tailscale OAuth 客户端并将客户端密钥存入 Doppler，然后运行 `homelab-ansible` 的 `playbooks/tailscale-router.yaml` 配置该 VM。若 `grokbot-box` 重新加入后获得新 IP，请在 Tailscale 管理后台重新分配 `100.102.152.24`。
+
 ## VCS 工作流
 
 本仓库由 HCP Terraform 的 VCS-driven workflow 管理。请通过分支和 Pull Request 提交变更，由关联 workspace 生成 speculative plan；合并后的正式 run 和 apply 也应在 HCP Terraform 中审核和执行。

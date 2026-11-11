@@ -25,3 +25,8 @@ output "talos_worker_macs" {
     for name, node in module.talos_worker : name => node.mac_address
   }
 }
+
+output "tailscale_router_ip" {
+  description = "Static IPv4 address of the Tailscale subnet router"
+  value       = "192.168.50.140"
+}
